@@ -1,0 +1,8 @@
+*~
+*.lastload
+*#
+CMakeFiles
+bin
+build
+lib
+

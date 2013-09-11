@@ -1,0 +1,28 @@
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+     <file alias="collide.xpm">images/collide.xpm</file>
+     <file>images/editcopy</file>
+     <file>images/editcut</file>
+     <file>images/editpaste</file>
+     <file>images/filenew</file>
+     <file alias="filenew.xpm">images/filenew.xpm</file>
+     <file>images/fileopen</file>
+     <file alias="fileopen.xpm">images/fileopen.xpm</file>
+     <file>images/filesave</file>
+     <file alias="filesave.xpm">images/filesave.xpm</file>
+     <file alias="logo.png">images/logo.png</file>
+     <file alias="mark.xpm">images/mark.xpm</file>
+     <file alias="nocollide.xpm">images/nocollide.xpm</file>
+     <file alias="pause.xpm">images/pause.xpm</file>
+     <file alias="play.xpm">images/play.xpm</file>
+     <file alias="prevMark.xpm">images/prevMark.xpm</file>
+     <file>images/print</file>
+     <file>images/redo</file>
+     <file alias="rotateTool.xpm">images/rotateTool.xpm</file>
+     <file>images/searchfind</file>
+     <file alias="selectTool.xpm">images/selectTool.xpm</file>
+     <file alias="splash.jpg">images/splash.jpg</file>
+     <file alias="translateTool.xpm">images/translateTool.xpm</file>
+     <file>images/undo</file>
+ </qresource>
+ </RCC>
