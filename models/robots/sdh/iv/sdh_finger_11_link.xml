@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<root>
+    <material>metal</material>
+    <mass>100</mass>
+    <cog>0 0 0</cog>
+    <inertia_matrix>0.01 -1.5543e-41 1.54321e-261 -1.5543e-41 -1.55378e-41 1.559e-261 1.54321e-261 1.559e-261 -1.60531e-41</inertia_matrix>
+    <geometryFile>knuckle.wrl</geometryFile>
+</root>

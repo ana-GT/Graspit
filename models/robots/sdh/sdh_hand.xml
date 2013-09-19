@@ -1,0 +1,243 @@
+<!-- ************ -->
+<!-- sdh_hand.xml -->
+<!-- ************ -->
+
+<?xml version="1.0" ?>
+<robot type="Hand">
+  <!-- Palm -->
+  <palm>sdh_palm_link.xml</palm>
+
+  <!-- Dof 0: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>18</draggerScale>
+  </dof>
+
+  <!-- Dof 1: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>15</draggerScale>
+  </dof>
+
+  <!-- Dof 2: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>15</draggerScale>
+  </dof> 
+
+  <!-- Dof 3: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>18</draggerScale>
+  </dof>
+
+  <!-- Dof 4: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>15</draggerScale>
+  </dof>
+
+  <!-- Dof 5: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>15</draggerScale>
+  </dof> 
+
+  <!-- Dof 6: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>18</draggerScale>
+  </dof>
+
+  <!-- Dof 7: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>15</draggerScale>
+  </dof>
+
+  <!-- Dof 8: -->
+  <dof type="r">
+    <defaultVelocity>1.0</defaultVelocity>
+    <maxEffort>5.0e+10</maxEffort>
+    <Kp>1.0e+11</Kp>
+    <Kd>1.0e+7</Kd>
+    <draggerScale>15</draggerScale>
+  </dof> 
+
+
+  <!-- ************** -->
+  <!-- Finger 1 Chain -->
+  <!-- ************** -->
+  <chain>
+    <transform>
+      <translation>19.05 33 74.5</translation>
+      <rotation>0 x</rotation>
+    </transform>
+    
+    <!-- Joint J11 -->
+    <joint type="Revolute">
+      <theta>d0</theta>
+      <d>16.5</d>
+      <a>0</a>
+      <alpha>90</alpha>
+      <minValue>0</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint>
+
+    <!-- Joint J12 -->
+    <joint type="Revolute">
+      <theta>d1+90</theta>
+      <d>0</d>
+      <a>86.5</a>
+      <alpha>0</alpha>
+      <minValue>-90</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint> 
+
+    <!-- Joint J13 -->
+   <joint type="Revolute">
+      <theta>d2</theta>
+      <d>0</d>
+      <a>0</a>
+      <alpha>0</alpha>
+      <minValue>-90</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint> 
+
+
+    <!-- Links -->
+    <link dynamicJointType="Revolute">sdh_finger_11_link.xml</link>
+    <link dynamicJointType="Revolute">sdh_finger_12_link.xml</link>
+    <link dynamicJointType="Revolute">sdh_finger_13_link.xml</link>  
+  </chain>
+
+
+  <!-- ************** -->
+  <!-- Finger 2 Chain -->
+  <!-- ************** -->
+  <chain>
+    <transform>
+      <translation>19.05 -33 74.5</translation>
+      <rotation>180 y</rotation>
+    </transform>
+    
+    <!-- Joint J21 -->
+    <joint type="Revolute">
+      <theta>d3</theta>
+      <d>-16.5</d>
+      <a>0</a>
+      <alpha>90</alpha>
+      <minValue>0</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint>
+
+    <!-- Joint J22 -->
+    <joint type="Revolute">
+      <theta>d4+270</theta>
+      <d>0</d>
+      <a>86.5</a>
+      <alpha>0</alpha>
+      <minValue>-90</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint> 
+
+    <!-- Joint J23 -->
+   <joint type="Revolute">
+      <theta>d5</theta>
+      <d>0</d>
+      <a>0</a>
+      <alpha>0</alpha>
+      <minValue>-90</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint> 
+
+
+    <!-- Links -->
+    <link dynamicJointType="Revolute">sdh_finger_21_link.xml</link>
+    <link dynamicJointType="Revolute">sdh_finger_22_link.xml</link>
+    <link dynamicJointType="Revolute">sdh_finger_23_link.xml</link> 
+  </chain>
+
+  <!-- ************** -->
+  <!-- Thumb Chain    -->
+  <!-- ************** -->
+  <chain>
+    <transform>
+      <translation>-38.11 0 74.5</translation>
+      <rotation>180 z</rotation>
+    </transform>
+    
+    <!-- Joint JT1 -->
+    <joint type="Revolute">
+      <theta>d6</theta>
+      <d>16.5</d>
+      <a>0</a>
+      <alpha>90</alpha>
+      <minValue>0</minValue>
+      <maxValue>0</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint>
+
+    <!-- Joint JT2 -->
+    <joint type="Revolute">
+      <theta>d7+90</theta>
+      <d>0</d>
+      <a>86.5</a>
+      <alpha>0</alpha>
+      <minValue>-90</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint> 
+
+    <!-- Joint JT3 -->
+   <joint type="Revolute">
+      <theta>d8</theta>
+      <d>0</d>
+      <a>0</a>
+      <alpha>0</alpha>
+      <minValue>-90</minValue>
+      <maxValue>90</maxValue>
+      <viscousFriction>5.0e+7</viscousFriction>
+    </joint> 
+
+
+    <!-- Links -->
+    <link dynamicJointType="Revolute">sdh_thumb_1_link.xml</link>
+    <link dynamicJointType="Revolute">sdh_thumb_2_link.xml</link>
+    <link dynamicJointType="Revolute">sdh_thumb_3_link.xml</link>  
+  </chain>
+
+
+
+
+</robot>

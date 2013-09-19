@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<world>
+	<graspableBody>
+		<filename>../Code/manipulation/graspit/psa/doorHinge_sup/doorHinge_sup.xml</filename>
+		<transform>
+			<fullTransform>(-0.410467 -0.4911 +0.646562 -0.415085)[-89.9895 -82.2413 -0.000806924]</fullTransform>
+		</transform>
+	</graspableBody>
+	<obstacle>
+		<filename>models/obstacles/corner_table.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[-401.709 -406.887 -477.301]</fullTransform>
+		</transform>
+	</obstacle>
+	<robot>
+		<filename>models/robots/Schunk/Schunk.xml</filename>
+		<dofValues>+0 +0 +0 +0 +0 +0 +0 +0 </dofValues>
+		<transform>
+			<fullTransform>(-0.11478 +0.740915 +0.631918 +0.196342)[-120.415 -154.575 +256.634]</fullTransform>
+		</transform>
+	</robot>
+	<camera>
+		<position>+605.134 -181.457 +356.134</position>
+		<orientation>+0.487084 +0.301469 +0.546321 +0.611064</orientation>
+		<focalDistance>+682.468</focalDistance>
+	</camera>
+</world>
