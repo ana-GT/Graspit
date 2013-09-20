@@ -219,6 +219,10 @@ VariableSet::removeParameter(QString name)
 	mParameters.erase(it);
 }
 
+/**
+ * @function writeToFile
+ * @brief Print the type of Variable Set and the values
+ */
 void 
 VariableSet::writeToFile(FILE *fp) const
 {
@@ -499,6 +503,11 @@ bool HandObjectState::readFromFile(FILE *fp)
 	return true;
 }
 
+/**
+ * @function writeToFile
+ * @brief Write the posture and position of the hand in a file, well
+ * @date 2013/09/20
+ */
 void HandObjectState::writeToFile(FILE *fp) const
 {
 	mPosture->writeToFile(fp); 

@@ -645,6 +645,20 @@ void EigenGraspPlannerDlg::plannerStart_clicked()
 	}
 }
 
+/**
+ * @function plannerPrint_clicked
+ */
+void EigenGraspPlannerDlg::plannerPrint_clicked() {
+  printf("Printing info \n");
+
+  FILE *f = fopen("graspInfo_stored.txt","w");
+  for (int i=0; i<mPlanner->getListSize(); i++) {
+    mPlanner->getGrasp(i)->writeToFile(f);
+  }
+  fclose(f);
+  printf("Done printing info \n");
+}
+
 void EigenGraspPlannerDlg::plannerTypeBox_activated( const QString & )
 {
 	if (mPlanner) {

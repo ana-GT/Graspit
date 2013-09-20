@@ -64,59 +64,60 @@ private:
     std::vector<QSlider*> varConfidence;
     std::vector<QLabel*> varTarget;
 
-	GraspPlanningState *mHandObjectState;
+    GraspPlanningState *mHandObjectState;
     GraspableBody *mObject;
     Hand *mHand;
     int mDisplayState;
     EGPlanner *mPlanner;
-
-	void init();
-	void destroy();
-	void setVariableLayout();
-	void updateVariableLayout();
-	void updateInputLayout();
-	void readPlannerSettings();
-	void startPlanner();
-	void stopPlanner();
+    
+    void init();
+    void destroy();
+    void setVariableLayout();
+    void updateVariableLayout();
+    void updateInputLayout();
+    void readPlannerSettings();
+    void startPlanner();
+    void stopPlanner();
 
 public:
-	EigenGraspPlannerDlg(QWidget *parent = 0) : QDialog(parent) {
-		setupUi(this);
-		init();
-	}
-	~EigenGraspPlannerDlg(){destroy();}
-
-public slots:
-	void exitButton_clicked();
-	void setMembers( Hand *h, GraspableBody *b );
-	void variableInputChanged();
-	void variableCheckBoxChanged();
-	void spaceSearchBox_activated( const QString &s );
-	void prevGraspButton_clicked();
-	void bestGraspButton_clicked();
-	void nextGraspButton_clicked();
-	void plannerUpdate();
-	void updateResults(bool render);
-	void updateStatus();
-	void energyBox_activated( const QString & );
-	void setContactsBox_toggled( bool checked);
-	void plannerComplete();
-	void plannerInit_clicked();
-	void plannerReset_clicked(); 
-	void plannerStart_clicked();
-	void plannerTypeBox_activated( const QString & );
-	void autoGraspBox_clicked();
-	void onlinePlannerUpdate();
-	void onlineGraspButton_clicked();
-	void onlineReleaseButton_clicked();
-	void onlinePlanButton_clicked();
-	void instantEnergyButton_clicked();
-	void showCloneBox_toggled( bool c);
-	void showSolutionBox_toggled( bool c);
-	void useVirtualHandBox_clicked();
-	void useRealBarrettBox_toggled( bool s);
-	void inputGloveBox_toggled( bool on);
-	void inputLoadButton_clicked();
+ EigenGraspPlannerDlg(QWidget *parent = 0) : QDialog(parent) {
+      setupUi(this);
+      init();
+    }
+    ~EigenGraspPlannerDlg(){destroy();}
+    
+    public slots:
+    void exitButton_clicked();
+    void setMembers( Hand *h, GraspableBody *b );
+    void variableInputChanged();
+    void variableCheckBoxChanged();
+    void spaceSearchBox_activated( const QString &s );
+    void prevGraspButton_clicked();
+    void bestGraspButton_clicked();
+    void nextGraspButton_clicked();
+    void plannerUpdate();
+    void updateResults(bool render);
+    void updateStatus();
+    void energyBox_activated( const QString & );
+    void setContactsBox_toggled( bool checked);
+    void plannerComplete();
+    void plannerInit_clicked();
+    void plannerReset_clicked(); 
+    void plannerStart_clicked();
+    void plannerPrint_clicked();
+    void plannerTypeBox_activated( const QString & );
+    void autoGraspBox_clicked();
+    void onlinePlannerUpdate();
+    void onlineGraspButton_clicked();
+    void onlineReleaseButton_clicked();
+    void onlinePlanButton_clicked();
+    void instantEnergyButton_clicked();
+    void showCloneBox_toggled( bool c);
+    void showSolutionBox_toggled( bool c);
+    void useVirtualHandBox_clicked();
+    void useRealBarrettBox_toggled( bool s);
+    void inputGloveBox_toggled( bool on);
+    void inputLoadButton_clicked();
 };
 
 #endif
