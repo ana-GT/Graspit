@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <world>
 	<graspableBody>
-		<filename>../Code/manipulation/graspit/psa/doorHinge_sup/doorHinge_sup.xml</filename>
+		<filename>models/objects/psa/doorHinge_sup/doorHinge_sup.xml</filename>
 		<transform>
 			<fullTransform>(-0.410467 -0.4911 +0.646562 -0.415085)[-89.9895 -82.2413 -0.000806924]</fullTransform>
 		</transform>
