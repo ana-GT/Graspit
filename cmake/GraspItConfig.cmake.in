@@ -1,0 +1,17 @@
+# *******************************************
+# Config file for GraspIt - Ana's version
+# *******************************************
+
+# This sets the following variables
+# GraspIt_INCLUDE_DIRS
+# GraspIt_LIBRARIES
+# GraspIt_LIBRARY_DIRS
+
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/home/ana/Research/Graspit/build/cmake" ) # "@CMAKE_INSTALL_PREFIX@/share/Graspit"
+find_package( GraspItExt REQUIRED )
+
+set( GraspIt_INCLUDE_DIRS "/home/ana/Research/Graspit/include"
+  ${GraspItExt_INCLUDE_DIRS} ) # "@CMAKE_INSTALL_PREFIX@/include/dart"
+
+set( GraspIt_LIBRARY_DIRS "/home/ana/Research/Graspit/lib" ) # "@CMAKE_INSTALL_PREFIX@/lib"
+set( GraspIt_LIBRARIES graspIt_basic ${GraspItExt_LIBRARIES} )

@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<world>
+	<graspableBody>
+		<filename>models/objects/CS8750/coffeeCup.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +0 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+	<robot>
+		<filename>models/robots/Schunk/Schunk.xml</filename>
+		<dofValues>+0 -1.5708 -1.5708 -1.5708 -1.5708 +0 -1.5708 -1.5708</dofValues>
+		<transform>
+			<fullTransform>(0.706467 0.707745 0.001410 0.000000)[-1.077200 175.468638 -87.644100]</fullTransform>
+		</transform>
+	</robot>
+	<camera>
+		<position>+456.304 +473.356 +443.401</position>
+		<orientation>-0.340569 -0.379089 -0.860068 -0.0242284</orientation>
+		<focalDistance>+600.211</focalDistance>
+	</camera>
+</world>

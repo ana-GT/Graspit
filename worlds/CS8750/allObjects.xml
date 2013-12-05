@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<world>
+
+	<graspableBody>
+		<filename>models/objects/CS8750/budweiser.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +0 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+
+	<graspableBody>
+		<filename>models/objects/CS8750/coffeeCup.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +300 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+
+	<graspableBody>
+		<filename>models/objects/CS8750/cordless_drill.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +600 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+
+	<graspableBody>
+		<filename>models/objects/CS8750/fishermanfriend2.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +900 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+
+	<graspableBody>
+		<filename>models/objects/CS8750/jar1.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +1200 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+
+
+	<camera>
+		<position>+456.304 +473.356 +443.401</position>
+		<orientation>-0.340569 -0.379089 -0.860068 -0.0242284</orientation>
+		<focalDistance>+600.211</focalDistance>
+	</camera>
+</world>

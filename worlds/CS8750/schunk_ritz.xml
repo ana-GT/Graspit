@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<world>
+	<graspableBody>
+		<filename>models/objects/CS8750/ritz.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0.000615183 -91.5757 -82.2554]</fullTransform>
+		</transform>
+	</graspableBody>
+	<obstacle>
+		<filename>models/obstacles/corner_table.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[-247.208 -306.756 -531.834]</fullTransform>
+		</transform>
+	</obstacle>
+	<robot>
+		<filename>models/robots/Schunk/Schunk.xml</filename>
+		<dofValues>+0 +0 +0 +0 +0 +0 +0 +0 </dofValues>
+		<transform>
+			<fullTransform>(-0.11478 +0.740915 +0.631918 +0.196342)[-11.1405 +38.1766 +199.15]</fullTransform>
+		</transform>
+	</robot>
+	<camera>
+		<position>+1127.4 +325.879 +505.71</position>
+		<orientation>+0.33331 +0.484191 +0.624567 +0.514178</orientation>
+		<focalDistance>+1243.54</focalDistance>
+	</camera>
+</world>

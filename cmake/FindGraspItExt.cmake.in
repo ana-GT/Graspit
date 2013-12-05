@@ -1,0 +1,53 @@
+# Find GraspIt
+
+# This sets the following variables
+# GraspIt_INCLUDE_DIRS - Directories containing the GraspIt include files
+# GraspIt_LIBRARIES - Libraries needed to use GraspIt
+
+find_package( PkgConfig QUIET )
+
+
+# Qt4
+find_package( Qt4 COMPONENTS QTCore QtGui QtXml Qt3Support )
+include( ${QT_USE_FILE} )
+add_definitions( ${QT_DEFINITIONS} )
+
+# Coin3
+find_package( Coin3D REQUIRED )
+
+# SoQt
+set( SoQt_INCLUDE_DIRS /usr/include/Inventor/Qt )
+set( SoQt_LIBRARIES /usr/lib/libSoQt4.so )
+
+# Blas and LaPack
+set( BLAS_INCLUDE_DIRS /usr/include/ )
+set( BLAS_LIBRARIES /usr/lib/libblas.so )
+
+find_package( LAPACK REQUIRED )
+set( graspIt_headers ${graspIt_headers} include/lapack_wrappers.h )
+
+# TinyXml
+set( TINYXML_INCLUDE_DIRS /usr/include/ )
+set( TINYXML_LIBRARIES /usr/lib/libtinyxml.so )
+
+# QHull
+set( QHULL_INCLUDE_DIRS /usr/include/qhull )
+set( QHULL_LIBRARIES /usr/lib/libqhull.so )
+
+# Set variables
+set( GraspItExt_INCLUDE_DIRS 
+  ${COIN3D_INCLUDE_DIRS}
+  ${SoQt_INCLUDE_DIRS} 
+  ${BLAS_INCLUDE_DIRS} 
+  ${TINYXML_INCLUDE_DIRS}
+  ${QHULL_INCLUDE_DIRS} )
+
+set( GraspItExt_LIBRARIES 
+  ${QT_LIBRARIES} 
+  ${COIN3D_LIBRARIES} 
+  ${QHULL_LIBRARIES} 
+  ${TINYXML_LIBRARIES} 
+  ${SoQt_LIBRARIES} 
+  ${LAPACK_LIBRARIES}  
+  ${BLAS_LIBRARIES} 
+  GL pthread dl  )

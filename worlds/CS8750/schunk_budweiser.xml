@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<world>
+	<graspableBody>
+		<filename>models/objects/CS8750/budweiser.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +0 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+	<robot>
+		<filename>models/robots/Schunk/Schunk.xml</filename>
+		<dofValues>+0 -1.5708 -1.5708 -1.5708 -1.5708 +0 -1.5708 -1.5708 </dofValues>
+		<transform>
+			<fullTransform>(+0.499834 +0.499168 +0.50116 +0.499836)[-170.819 +0.1106 -92.106]</fullTransform>
+		</transform>
+	</robot>
+	<camera>
+		<position>-221.043 +403.991 +796.93</position>
+		<orientation>+0.0187877 -0.253598 -0.912819 +0.319526</orientation>
+		<focalDistance>+895.41</focalDistance>
+	</camera>
+</world>
