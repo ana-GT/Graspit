@@ -12,7 +12,7 @@
 #include <QFileDialog>
 #include <QValidator>
 
-#include "robot.h"
+#include "robot.h" /**< Contains Hand */
 #include "mainWindow.h"
 #include "graspitGUI.h"
 #include "grasp_manager.h"
@@ -54,3 +54,12 @@ void TaxonomyDlg::readGraspFile()
  printf("Read grasp file!!!!!!!!!1 \n");
 }
 
+/**
+ * @function printInfo
+ */
+void TaxonomyDlg::printInfo() {
+
+  assert( mWorld->getCurrentHand() );
+  printf(" Num hand dof: %d \n", mWorld->getCurrentHand()->getNumDOF() );
+
+}

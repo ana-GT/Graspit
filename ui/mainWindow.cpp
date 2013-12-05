@@ -1385,6 +1385,9 @@ void MainWindow::taxonomyActivated() {
   TaxonomyDlg *dlg = new TaxonomyDlg(mWindow);
   dlg->setAttribute(Qt::WA_ShowModal, false);
   dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+
+  dlg->setWorld( world );
+  dlg->printInfo();
   /*
   if (!dlg->setWorld(world) ) {
     delete dlg;

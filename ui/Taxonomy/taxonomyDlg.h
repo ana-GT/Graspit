@@ -15,6 +15,7 @@
 #include <QFile>
 #include "ui_taxonomyDlg.h"
 
+class World;
 
 /*! \class PlannerDlg
   \brief Creates and controls the grasp planner dialog box.
@@ -29,14 +30,20 @@ class TaxonomyDlg : public QDialog, public Ui::TaxonomyDlgUI
     
     void init();
     void destroy() ;
+
  public:
  TaxonomyDlg(QWidget *parent = 0) : QDialog(parent) {
-	setupUi(this);
-	init();
+      setupUi(this);
+      init();
     }
     ~TaxonomyDlg(){destroy();}
-    public slots:
 
+    void setWorld( World* _world ) { mWorld = _world; }
+    void printInfo();
+
+    World* mWorld;
+    
+    public slots:    
     void readGraspFile();
     
 };

@@ -14,45 +14,25 @@ set( PKG_EXTERNAL_DEPS "Qt4" )
 # Options
 set( CMAKE_INSTALL_PREFIX "/usr/local" )
 
-# Qt4
-find_package( Qt4 COMPONENTS QTCore QtGui QtXml Qt3Support )
-include( ${QT_USE_FILE} )
-add_definitions( ${QT_DEFINITIONS} )
+# ******************************************
+# Generate the GraspIt! CMake Config file
+# ******************************************
+file( GLOB cmake_mods "cmake/Modules/*.cmake" )
+configure_file( ${CMAKE_SOURCE_DIR}/cmake/FindGraspItExt.cmake.in ${CMAKE_BINARY_DIR}/cmake/FindGraspItExt.cmake @ONLY )
+configure_file( ${CMAKE_SOURCE_DIR}/cmake/GraspItConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/GraspItConfig.cmake @ONLY )
+install( FILES ${CMAKE_BINARY_DIR}/cmake/FindGraspItExt.cmake DESTINATION share/GraspIt )
+install( FILES ${CMAKE_BINARY_DIR}/cmake/GraspItConfig.cmake DESTINATION share/GraspIt )
 
 
-# Coin3
-find_package( Coin3D REQUIRED )
-include_directories( ${COIN3D_INCLUDE_DIRS} )
+set( PC_CONFIG_IN ${CMAKE_SOURCE_DIR}/cmake/graspit.pc.in )
+set( PC_CONFIG_OUT ${CMAKE_BINARY_DIR}/cmake/graspit.pc )
+configure_file( ${PC_CONFIG_IN} ${PC_CONFIG_OUT} @only )
+install( FILES ${PC_CONFIG_OUT} DESTINATION lib/pkgconfig )
 
-# SoQt
-set( SoQt_INCLUDE_DIRS /usr/include/Inventor/Qt )
-set( SoQt_LIBRARIES /usr/lib/libSoQt4.so )
-
-include_directories( ${SoQt_INCLUDE_DIRS} )
-
-
-# Blas and LaPack
-set( BLAS_INCLUDE_DIRS /usr/include/ )
-set( BLAS_LIBRARIES /usr/lib/libblas.so )
-
-include_directories( ${BLAS_INCLUDE_DIRS} )
-
-find_package( LAPACK REQUIRED )
-set( graspIt_headers ${graspIt_headers} include/lapack_wrappers.h )
-
-# TinyXml
-set( TINYXML_INCLUDE_DIRS /usr/include/ )
-set( TINYXML_LIBRARIES /usr/lib/libtinyxml.so )
-
-include_directories( ${TINYXML_INCLUDE_DIRS} )
-
-
-
-# QHull
-set( QHULL_INCLUDE_DIRS /usr/include/qhull )
-set( QHULL_LIBRARIES /usr/lib/libqhull.so )
-
-include_directories( ${QHULL_INCLUDE_DIRS} )
+# Find important packages
+set( CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/cmake" )
+find_package( GraspItExt REQUIRED )
+include_directories( ${GraspItExt_INCLUDE_DIRS} )
 
 # ***************************************************
 
@@ -362,25 +342,13 @@ QT4_WRAP_CPP( graspIt_MOC_HEADERS ${graspIt_OBJECT_HEADERS} )
 MESSAGe( "resources: ${graspIt_RESOURCES}")
 
 add_executable( graspIt ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
-target_link_libraries( graspIt ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${QHULL_LIBRARIES} ${TINYXML_LIBRARIES} ${SoQt_LIBRARIES} ${LAPACK_LIBRARIES}
-  ${BLAS_LIBRARIES} -lGL -lpthread -ldl )
+target_link_libraries( graspIt ${GraspItExt_LIBRARIES} )
 set_target_properties( graspIt PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
 
 add_library( graspIt_basic ${graspIt_headers} ${graspIt_sources} ${graspIt_RESOURCES} )
-target_link_libraries( graspIt_basic ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${QHULL_LIBRARIES} ${TINYXML_LIBRARIES} ${SoQt_LIBRARIES} ${LAPACK_LIBRARIES}
-  ${BLAS_LIBRARIES} -lGL -lpthread -ldl )
+target_link_libraries( graspIt_basic ${GraspItExt_LIBRARIES} )
 set_target_properties( graspIt_basic PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib )
 
 
-# ******************************************
-# Generate the GraspIt! CMake Config file
-# ******************************************
-file( GLOB cmake_mods "cmake/Modules/*.cmake" )
-configure_file( ${CMAKE_SOURCE_DIR}/cmake/FindGraspIt.cmake.in ${CMAKE_BINARY_DIR}/cmake/FindGraspIt.cmake @ONLY )
-install( FILES ${CMAKE_BINARY_DIR}/cmake/FindGraspIt.cmake DESTINATION share/GraspIt )
 
-set( PC_CONFIG_IN ${CMAKE_SOURCE_DIR}/cmake/graspit.pc.in )
-set( PC_CONFIG_OUT ${CMAKE_BINARY_DIR}/cmake/graspit.pc )
-configure_file( ${PC_CONFIG_IN} ${PC_CONFIG_OUT} @only )
-install( FILES ${PC_CONFIG_OUT} DESTINATION lib/pkgconfig )
 
