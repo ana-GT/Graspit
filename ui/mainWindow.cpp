@@ -90,6 +90,10 @@
 #include "sensorInputDlg.h"
 #endif
 
+
+// Taxonomy
+#include "taxonomyDlg.h"
+
 //------------------------------------ CONSTRUCTOR AND DESTRUCTOR -------------------------------------
 
 MainWindow::MainWindow(QWidget *parent) 
@@ -174,7 +178,13 @@ MainWindow::MainWindow(QWidget *parent)
   QObject::connect(mUI->TendonForceInput, SIGNAL(valueChanged(int)), this, SLOT(TendonForceInput_valueChanged(int)));
   QObject::connect(mUI->tendonNamesBox, SIGNAL(activated(int)), this, SLOT(tendonNamesBoxActivated(int)));
   QObject::connect(mUI->tendonVisibleCheckBox, SIGNAL(toggled(bool)), this, SLOT(tendonVisibleCheckBox_toggled(bool)));
-  QObject::connect(mUI->forcesVisibleCheckBox, SIGNAL(toggled(bool)), this, SLOT(forcesVisibleCheckBox_toggled(bool)));}
+  QObject::connect(mUI->forcesVisibleCheckBox, SIGNAL(toggled(bool)), this, SLOT(forcesVisibleCheckBox_toggled(bool)));
+
+  // -- Taxonomy menu
+  QObject::connect( mUI->taxonomyAction, SIGNAL(triggered()), this, SLOT(taxonomyActivated()) );
+
+}
+
 
 /*!
   UI constructor.  Zeros the time readout, sets the correct states for the
@@ -1365,4 +1375,21 @@ void MainWindow::updateTendonNamesBox()
     mUI->tendonNamesBox->insertItem( world->getSelectedHandTendonName(i) );
   }
   mUI->tendonNamesBox->insertItem( QString("--none selected--") );
+}
+
+/**
+ * @function taxonomyActivated
+ */
+void MainWindow::taxonomyActivated() {
+
+  TaxonomyDlg *dlg = new TaxonomyDlg(mWindow);
+  dlg->setAttribute(Qt::WA_ShowModal, false);
+  dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+  /*
+  if (!dlg->setWorld(world) ) {
+    delete dlg;
+    return;
+    } */
+  dlg->show();
+
 }

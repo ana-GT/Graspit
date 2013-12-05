@@ -73,7 +73,8 @@ include_directories(   src
   include/EGPlanner  
   ui 
   ui/Planner 
-  ui/EGPlanner )
+  ui/EGPlanner
+  ui/Taxonomy )
 
 
 # Header files
@@ -267,7 +268,8 @@ set( graspIt_sources ${graspIt_sources}
 # Include directories
 include_directories( ui 
   ui/Planner 
-  ui/EGPlanner )
+  ui/EGPlanner
+  ui/Taxonomy )
 
 # Header files
 set( graspIt_headers ${graspIt_headers}
@@ -288,7 +290,8 @@ set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
   ui/settingsDlg.h
   ui/EGPlanner/compliantPlannerDlg.h
   ui/EGPlanner/egPlannerDlg.h 
-  ui/Planner/plannerdlg.h )  
+  ui/Planner/plannerdlg.h
+  ui/Taxonomy/taxonomyDlg.h )  
 
 # Source files
 set( graspIt_sources ${graspIt_sources}
@@ -306,7 +309,8 @@ set( graspIt_sources ${graspIt_sources}
   ui/settingsDlg.cpp 
   ui/Planner/plannerdlg.cpp 
   ui/EGPlanner/egPlannerDlg.cpp 
-  ui/EGPlanner/compliantPlannerDlg.cpp )
+  ui/EGPlanner/compliantPlannerDlg.cpp
+  ui/Taxonomy/taxonomyDlg.cpp )
 
 
 # UI files
@@ -327,7 +331,8 @@ set( QT_FORMS ${QT_FORMS}
   ui/settingsDlg.ui 
   ui/Planner/plannerdlg.ui 
   ui/EGPlanner/egPlannerDlg.ui 
-  ui/EGPlanner/compliantPlannerDlg.ui )
+  ui/EGPlanner/compliantPlannerDlg.ui
+  ui/Taxonomy/taxonomyDlg.ui )
 
 # **********************************
 # Optimizer 
