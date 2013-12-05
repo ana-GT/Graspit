@@ -2,6 +2,18 @@
 # CMake for GraspIt
 # **************************
 cmake_minimum_required( VERSION 2.8 )
+project( Graspit )
+message( STATUS "Generate makefile/project file for Graspit" )
+
+set( Graspit_MAJOR_VERSION "1" )
+set( Graspit_MINOR_VERSION "0" )
+set( PKG_DES "Ana's Graspit version" )
+set( Graspit_VERSION "${Graspit_MAJOR_VERSION}.${Graspit_MINOR_VERSION}" )
+set( PKG_EXTERNAL_DEPS "Qt4" )
+
+# Options
+set( CMAKE_INSTALL_PREFIX "/usr/local" )
+
 # Qt4
 find_package( Qt4 COMPONENTS QTCore QtGui QtXml Qt3Support )
 include( ${QT_USE_FILE} )
@@ -344,6 +356,26 @@ QT4_WRAP_UI( graspIt_FORMS_HEADERS ${QT_FORMS} )
 QT4_WRAP_CPP( graspIt_MOC_HEADERS ${graspIt_OBJECT_HEADERS} )
 MESSAGe( "resources: ${graspIt_RESOURCES}")
 
-add_executable( graspItTest ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
-target_link_libraries( graspItTest ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${QHULL_LIBRARIES} ${TINYXML_LIBRARIES} ${SoQt_LIBRARIES} ${LAPACK_LIBRARIES}
+add_executable( graspIt ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
+target_link_libraries( graspIt ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${QHULL_LIBRARIES} ${TINYXML_LIBRARIES} ${SoQt_LIBRARIES} ${LAPACK_LIBRARIES}
   ${BLAS_LIBRARIES} -lGL -lpthread -ldl )
+set_target_properties( graspIt PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
+
+add_library( graspIt_basic ${graspIt_headers} ${graspIt_sources} ${graspIt_RESOURCES} )
+target_link_libraries( graspIt_basic ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${QHULL_LIBRARIES} ${TINYXML_LIBRARIES} ${SoQt_LIBRARIES} ${LAPACK_LIBRARIES}
+  ${BLAS_LIBRARIES} -lGL -lpthread -ldl )
+set_target_properties( graspIt_basic PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib )
+
+
+# ******************************************
+# Generate the GraspIt! CMake Config file
+# ******************************************
+file( GLOB cmake_mods "cmake/Modules/*.cmake" )
+configure_file( ${CMAKE_SOURCE_DIR}/cmake/FindGraspIt.cmake.in ${CMAKE_BINARY_DIR}/cmake/FindGraspIt.cmake @ONLY )
+install( FILES ${CMAKE_BINARY_DIR}/cmake/FindGraspIt.cmake DESTINATION share/GraspIt )
+
+set( PC_CONFIG_IN ${CMAKE_SOURCE_DIR}/cmake/graspit.pc.in )
+set( PC_CONFIG_OUT ${CMAKE_BINARY_DIR}/cmake/graspit.pc )
+configure_file( ${PC_CONFIG_IN} ${PC_CONFIG_OUT} @only )
+install( FILES ${PC_CONFIG_OUT} DESTINATION lib/pkgconfig )
+
