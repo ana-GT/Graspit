@@ -54,7 +54,7 @@ include_directories(   src
   ui 
   ui/Planner 
   ui/EGPlanner
-  ui/Taxonomy )
+  ui/CanonicalPlanner )
 
 
 # Header files
@@ -170,7 +170,7 @@ set( graspIt_sources ${graspIt_sources}
   src/joint.cpp 
   src/kinematicChain.cpp 
   src/lmiOptimizer.cpp 
-  src/main.cpp 
+#  src/main.cpp 
   src/material.cpp 
   src/matvec.cpp 
   src/matvecIO.cpp 
@@ -249,7 +249,7 @@ set( graspIt_sources ${graspIt_sources}
 include_directories( ui 
   ui/Planner 
   ui/EGPlanner
-  ui/Taxonomy )
+  ui/CanonicalPlanner )
 
 # Header files
 set( graspIt_headers ${graspIt_headers}
@@ -271,7 +271,7 @@ set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
   ui/EGPlanner/compliantPlannerDlg.h
   ui/EGPlanner/egPlannerDlg.h 
   ui/Planner/plannerdlg.h
-  ui/Taxonomy/taxonomyDlg.h )  
+  ui/CanonicalPlanner/canonicalPlannerDlg.h )  
 
 # Source files
 set( graspIt_sources ${graspIt_sources}
@@ -290,7 +290,7 @@ set( graspIt_sources ${graspIt_sources}
   ui/Planner/plannerdlg.cpp 
   ui/EGPlanner/egPlannerDlg.cpp 
   ui/EGPlanner/compliantPlannerDlg.cpp
-  ui/Taxonomy/taxonomyDlg.cpp )
+  ui/CanonicalPlanner/canonicalPlannerDlg.cpp )
 
 
 # UI files
@@ -312,7 +312,7 @@ set( QT_FORMS ${QT_FORMS}
   ui/Planner/plannerdlg.ui 
   ui/EGPlanner/egPlannerDlg.ui 
   ui/EGPlanner/compliantPlannerDlg.ui
-  ui/Taxonomy/taxonomyDlg.ui )
+  ui/CanonicalPlanner/canonicalPlannerDlg.ui )
 
 # **********************************
 # Optimizer 
@@ -341,9 +341,13 @@ QT4_WRAP_UI( graspIt_FORMS_HEADERS ${QT_FORMS} )
 QT4_WRAP_CPP( graspIt_MOC_HEADERS ${graspIt_OBJECT_HEADERS} )
 MESSAGe( "resources: ${graspIt_RESOURCES}")
 
-add_executable( graspIt ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
+add_executable( graspIt src/main.cpp ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
 target_link_libraries( graspIt ${GraspItExt_LIBRARIES} )
 set_target_properties( graspIt PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
+
+add_executable( tester apps/tester.cpp ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
+target_link_libraries( tester ${GraspItExt_LIBRARIES} )
+set_target_properties( tester PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
 
 add_library( graspIt_basic ${graspIt_headers} ${graspIt_sources} ${graspIt_RESOURCES} )
 target_link_libraries( graspIt_basic ${GraspItExt_LIBRARIES} )

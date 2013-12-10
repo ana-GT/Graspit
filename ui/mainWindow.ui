@@ -506,9 +506,9 @@
    </widget>
    <widget class="QMenu" name="menuTaxonomy">
     <property name="title">
-     <string>Taxonomy</string>
+     <string>Canonical</string>
     </property>
-    <addaction name="taxonomyAction"/>
+    <addaction name="canonicalPlannerAction"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="elementMenu"/>
@@ -1074,7 +1074,7 @@
     <cstring>dbasePlannerAction</cstring>
    </property>
   </action>
-  <action name="taxonomyAction">
+  <action name="canonicalPlannerAction">
    <property name="text">
     <string>Taxonomy...</string>
    </property>

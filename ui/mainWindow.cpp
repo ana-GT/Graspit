@@ -92,7 +92,7 @@
 
 
 // Taxonomy
-#include "taxonomyDlg.h"
+#include "canonicalPlannerDlg.h"
 
 //------------------------------------ CONSTRUCTOR AND DESTRUCTOR -------------------------------------
 
@@ -180,8 +180,8 @@ MainWindow::MainWindow(QWidget *parent)
   QObject::connect(mUI->tendonVisibleCheckBox, SIGNAL(toggled(bool)), this, SLOT(tendonVisibleCheckBox_toggled(bool)));
   QObject::connect(mUI->forcesVisibleCheckBox, SIGNAL(toggled(bool)), this, SLOT(forcesVisibleCheckBox_toggled(bool)));
 
-  // -- Taxonomy menu
-  QObject::connect( mUI->taxonomyAction, SIGNAL(triggered()), this, SLOT(taxonomyActivated()) );
+  // -- Canonical planner menu
+  QObject::connect( mUI->canonicalPlannerAction, SIGNAL(triggered()), this, SLOT(canonicalPlannerActivated()) );
 
 }
 
@@ -1378,11 +1378,11 @@ void MainWindow::updateTendonNamesBox()
 }
 
 /**
- * @function taxonomyActivated
+ * @function canonicalPlannerActivated
  */
-void MainWindow::taxonomyActivated() {
+void MainWindow::canonicalPlannerActivated() {
 
-  TaxonomyDlg *dlg = new TaxonomyDlg(mWindow);
+  CanonicalPlannerDlg *dlg = new CanonicalPlannerDlg(mWindow);
   dlg->setAttribute(Qt::WA_ShowModal, false);
   dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 

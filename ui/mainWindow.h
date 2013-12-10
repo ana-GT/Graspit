@@ -158,5 +158,5 @@ public slots:
 	void tendonVisibleCheckBox_toggled( bool vis);
 	void forcesVisibleCheckBox_toggled( bool vis);
 
-	void taxonomyActivated();
+	void canonicalPlannerActivated();
 };

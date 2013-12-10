@@ -124,7 +124,6 @@ World::World(QObject *parent, const char *name, IVmgr *mgr) : QObject(parent,nam
 
 	allCollisionsOFF = false;
 	softContactsON = true;
-
 	cofTable=kcofTable=NULL;
 	// set up the world parameters 
 	readSettings();  
@@ -138,7 +137,6 @@ World::World(QObject *parent, const char *name, IVmgr *mgr) : QObject(parent,nam
 #ifdef GRASPIT_COLLISION
 	mCollisionInterface = new GraspitCollision();
 #endif
-
 	IVRoot = new SoSeparator;
 	IVRoot->ref();
 
