@@ -1382,17 +1382,20 @@ void MainWindow::updateTendonNamesBox()
  */
 void MainWindow::canonicalPlannerActivated() {
 
+  assert( world->getCurrentHand() );
+  
+  int gb = mUI->graspedBodyBox->currentItem();
+  if( gb < 0 || world->getNumGB() < gb + 1 ) {
+    fprintf( stderr, "No object selected \n" );
+    return;
+  }
+
   CanonicalPlannerDlg *dlg = new CanonicalPlannerDlg(mWindow);
+  dlg->setMembers( world->getCurrentHand(),
+		   world->getGB(gb) );
   dlg->setAttribute(Qt::WA_ShowModal, false);
   dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 
-  dlg->setWorld( world );
-  dlg->printInfo();
-  /*
-  if (!dlg->setWorld(world) ) {
-    delete dlg;
-    return;
-    } */
   dlg->show();
 
 }
