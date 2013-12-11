@@ -1076,7 +1076,7 @@
   </action>
   <action name="canonicalPlannerAction">
    <property name="text">
-    <string>Taxonomy...</string>
+    <string>Canonical Planner</string>
    </property>
   </action>
   <actiongroup name="elementGroup">

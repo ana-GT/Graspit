@@ -1,10 +1,7 @@
-//######################################################################
-//
-// Authors: A. Huaman
-//
-// $Id: 
-//
-//######################################################################
+/**
+ * @Authors: A. Huaman
+ */
+
 
 #include "canonicalPlannerDlg.h"
 
@@ -25,14 +22,8 @@
 #include "quality.h"
 #include "mytools.h"
 
-/*!
-  First this creates a new grasp_manager and gets the default planning and
-  testing parameters.  Then it sets up number validators for the text entry
-  boxes.  Finally it populates the quality measure comboBox with the names
-  of the currently defined quality measures for this grasp.  If there are
-  no quality measures defined, the generate button is disabled, but the user
-  can add QM's by pressing the new button in this dialog box.
-*/
+#include "EGPlanner/searchState.h"
+
 void CanonicalPlannerDlg::init()
 {
 
@@ -47,6 +38,13 @@ void CanonicalPlannerDlg::destroy()
 }
 
 
+/**
+ *  @function CanonicalPlannerDlg::exitButton_clicked
+ */
+void CanonicalPlannerDlg::exitButton_clicked() {
+
+}
+
 /*!
   Calls on the grasp_manager to show the next planned grasp.
 */
@@ -56,10 +54,30 @@ void CanonicalPlannerDlg::readGraspFile()
 }
 
 /**
+ * @function setMembers
+ */
+void CanonicalPlannerDlg::setMembers( Hand *_h, GraspableBody *_b ) {
+
+  mPlanner = NULL;
+  mHand = _h;
+  mObject = _b;
+  mHand->getGrasp()->setObjectNoUpdate( mObject );
+  mHand->getGrasp()->setGravity( false );
+
+  mHandObjectState = new GraspPlanningState( mHand );
+  mHandObjectState->setObject( mObject );
+  mHandObjectState->setPositionType( SPACE_AXIS_ANGLE );
+  mHandObjectState->setRefTran(mObject->getTran());
+  mHandObjectState->reset();
+
+}
+
+
+/**
  * @function printInfo
  */
 void CanonicalPlannerDlg::printInfo() {
-
+  /*
   assert( mWorld->getCurrentHand() );
   printf(" Num hand dof: %d \n", mWorld->getCurrentHand()->getNumDOF() );
  // Get grasp
@@ -78,8 +96,5 @@ void CanonicalPlannerDlg::printInfo() {
     if( isForceClosure == false ) { printf("[BAD] It is not force closure! \n"); }
     else { printf("[GOOD] It is force closure! \n");}
  }
-}
-
-
-void CanonicalPlanner::setMembers( Hand *_h, GraspableBody *_b ) {
+  */
 }

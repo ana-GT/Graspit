@@ -46,7 +46,7 @@ class SoMaterial;
 	eigenGrasp amplitude, wrist DOF, hand position in space etc. It just has
 	a value, a legal range defined my a min and a max. It can also store some 
 	other information, such as the maximum "jump" allowed for this variable
-	when doing simulated annealing, a "confidence" leve we have in the value
+	when doing simulated annealing, a "confidence" level we have in the value
 	of this variable, etc.
 */
 class SearchVariable
@@ -232,7 +232,7 @@ public:
 
 	It can also store a REFERENCE transform. This means that the inner transform, 
 	stored in mPosition, is only relevant relative to the reference transform. 
-	Imagine for example that we want the mPosition to just encode the trasnform 
+	Imagine for example that we want the mPosition to just encode the transform
 	relative to the target object - then we set mRefTran to the transform of the 
 	object. Or, mPosition can be relative to an input transform specified by the 
 	user, etc. Alternatively, mPosition can also store the hand transform in 

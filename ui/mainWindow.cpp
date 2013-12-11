@@ -632,6 +632,8 @@ void MainWindow::updateGraspMenu()
     
     mUI->dbaseGraspCaptureAction->setEnabled(handFound);
     mUI->sensorsBarrett_HandAction->setEnabled(handFound);
+
+    mUI->canonicalPlannerAction->setEnabled(handFound);
 }
 
 /*!
@@ -1392,7 +1394,7 @@ void MainWindow::canonicalPlannerActivated() {
 
   CanonicalPlannerDlg *dlg = new CanonicalPlannerDlg(mWindow);
   dlg->setMembers( world->getCurrentHand(),
-		   world->getGB(gb) );
+		   	   	   world->getGB(gb) );
   dlg->setAttribute(Qt::WA_ShowModal, false);
   dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 
