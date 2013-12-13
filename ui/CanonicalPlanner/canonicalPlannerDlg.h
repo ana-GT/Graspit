@@ -14,7 +14,7 @@ class World;
 class GraspPlanningState;
 class GraspableBody;
 class Hand;
-class EGPlanner;
+class CanonPlanner;
 //class CanonPlanner;
 
 /**
@@ -34,7 +34,7 @@ class  CanonicalPlannerDlg : public QDialog,
   GraspableBody *mObject;
   Hand *mHand;
   int mDisplayState;
-  EGPlanner *mPlanner;
+  CanonPlanner *mPlanner;
 
   void init();
   void destroy();
@@ -51,8 +51,10 @@ class  CanonicalPlannerDlg : public QDialog,
   
   public slots:  
   void exitButton_clicked();
+  void plannerStart_clicked();
+  void readFile_clicked();
+  void showBaseGrasps_clicked();
   void setMembers( Hand *_h, GraspableBody *_b );
-  void readGraspFile();
   void printInfo();  
 
 };

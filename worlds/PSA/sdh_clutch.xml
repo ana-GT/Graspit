@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<world>
+	<graspableBody>
+		<filename>models/objects/PSA/Clutch_sensor.xml</filename>
+		<transform>
+			<fullTransform>(+0 +1 +0 +0)[+0 +0 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+	<obstacle>
+		<filename>models/obstacles/table.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[-24.1321 -547.893 +422.484]</fullTransform>
+		</transform>
+	</obstacle>
+	<robot>
+		<filename>models/robots/Schunk/Schunk.xml</filename>
+		<dofValues>+0 +0 +0 +0 +0 +0 +0 +0 </dofValues>
+		<transform>
+			<fullTransform>(+0 +1 +0 +0)[+4.92803 +0 +349.144]</fullTransform>
+		</transform>
+	</robot>
+	<camera>
+		<position>+1007.65 -1910 +238.579</position>
+		<orientation>+0.615381 +0.239478 +0.140313 +0.737746</orientation>
+		<focalDistance>+3059.43</focalDistance>
+	</camera>
+</world>

@@ -69,7 +69,7 @@ class SimAnn;
 	Starting in version 2.1.0, the main GuidedPlanner also stores the final
 	grasp for any of its solutions. Therefore, for each solution, the best list
 	of this planner will contain the pre-grasp followed by the final grasp. This
-	wsa done in an attempt to make this planner usable "off the shelf" without
+	was done in an attempt to make this planner usable "off the shelf" without
 	having to worry about recomputing exact final grasps after its done. See the
 	stopChild(...) function for details about how the solutions recovered from
 	children threads are saved.
@@ -78,7 +78,7 @@ class GuidedPlanner : public SimAnnPlanner
 {
 	Q_OBJECT
 protected:
-	//! The max number of children that canbe used. Usually correlated with the number of cores available.
+	//! The max number of children that can be used. Usually correlated with the number of cores available.
 	int mMaxChildren;
 	//! The list of currently active child planners.
 	std::vector<SimAnnPlanner*> mChildPlanners;
@@ -87,7 +87,7 @@ protected:
 	std::list<GraspPlanningState*> mChildSeeds;
 
 	//! A list of states that should be avoided by the search
-	/*! They are avoded because they have either been used by a child or are 
+	/*! They are avoided because they have either been used by a child or are
 		scheduled to be used by one. Essentially, it is the union of 
 		mChildSeeds and mBestList.
 	*/

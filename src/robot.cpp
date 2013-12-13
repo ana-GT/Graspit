@@ -2235,7 +2235,7 @@ Hand::cloneFrom(Hand *original)
 Closes each DOF at a rate equal to \a speedFactor * its default velocity.
 The closing continues until a joint limit is reached or a contact
 prevents further motion.  The larger the \a speedFactor, the larger the
-individual steps will be and increases the likelyhood that a collision
+individual steps will be and increases the likelihood that a collision
 may be missed.  The \a renderIt flag controls whether the intermediate
 steps will be rendered.
 

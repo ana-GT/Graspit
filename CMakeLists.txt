@@ -138,6 +138,7 @@ set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
   include/worldElement.h
   include/world.h
   include/EGPlanner/egPlanner.h
+  include/EGPlanner/canonPlanner.h
   include/EGPlanner/guidedPlanner.h 
   include/EGPlanner/loopPlanner.h
   include/EGPlanner/searchEnergy.h
@@ -219,7 +220,8 @@ set( graspIt_sources ${graspIt_sources}
   src/EGPlanner/timeTest.cpp 
   src/EGPlanner/graspTesterThread.cpp 
   src/EGPlanner/onLineGraspInterface.cpp 
-  src/EGPlanner/listPlanner.cpp )
+  src/EGPlanner/listPlanner.cpp
+  src/EGPlanner/canonPlanner.cpp )
 
 
 #***************************************

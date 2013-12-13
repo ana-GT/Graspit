@@ -29,7 +29,7 @@
 #include "searchState.h"
 
 /*! \file These are implementations of the various interfaces 
-	for storing hand poature and hand position. 
+	for storing hand posture and hand position.
 
 	Ways of storing hand posture:
 	<ul>
@@ -40,7 +40,7 @@
 	<ul>
 	<li> complete (4 entries of a quaternion + translation)
 	<li> axis-angle (3 entries for rotation + translation)
-	<li> elipsoid (a point on a pre-defined ellipsoid)
+	<li> ellipsoid (a point on a pre-defined ellipsoid)
 	<li> approach (relative to a reference hand position and 
 		 pre-defined appraoch direction)
 	</ul>

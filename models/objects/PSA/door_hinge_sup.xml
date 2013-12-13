@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<root>
+	<material>metal</material>
+	<mass>440</mass>
+	<cog>0 0 0</cog>
+	<geometryFile type="Inventor">door_hinge_sup.wrl</geometryFile>
+</root>

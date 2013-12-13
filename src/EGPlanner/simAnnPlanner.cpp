@@ -114,9 +114,11 @@ SimAnnPlanner::mainLoop()
 	SimAnn::Result result = mSimAnn->iterate(mCurrentState, mEnergyCalculator, input);
 	if ( result == SimAnn::FAIL) {
 		DBGP("Sim ann failed");
+		printf("Sim ann failed \n");
 		return;
 	}
 	DBGP("Sim Ann success");
+	printf("Sim Ann success \n");
 
 	//put result in list if there's room or it's better than the worst solution so far
 	double worstEnergy;

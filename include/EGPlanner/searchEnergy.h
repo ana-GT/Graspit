@@ -47,7 +47,7 @@ class GraspPlanningState;
 
 	The various type of energy calculations used are a bit fuzzy too, 
 	re-organization will help when it happens. For now, I will not provide 
-	very detailed documentation here, as I am really embarassed by this code
+	very detailed documentation here, as I am really embarrassed by this code
 	and plan to re-write it as soon as possible.
 */
 class SearchEnergy : public QObject

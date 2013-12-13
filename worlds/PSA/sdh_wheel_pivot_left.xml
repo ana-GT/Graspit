@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<world>
+	<graspableBody>
+		<filename>models/objects/PSA/Wheel_pivot_left.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+0 +0 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+	<obstacle>
+		<filename>models/obstacles/table.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[+36.7193 -526.914 +420.84]</fullTransform>
+		</transform>
+	</obstacle>
+	<robot>
+		<filename>models/robots/Schunk/Schunk.xml</filename>
+		<dofValues>+0 +0 +0 +0 +0 +0 +0 +0 </dofValues>
+		<transform>
+			<fullTransform>(+0 +1 +0 +0)[+32.5594 +43.1414 +405.275]</fullTransform>
+		</transform>
+	</robot>
+	<camera>
+		<position>-154.301 -1609.7 +1091.06</position>
+		<orientation>+0.427027 -0.174784 +0.31654 +0.828795</orientation>
+		<focalDistance>+2768.29</focalDistance>
+	</camera>
+</world>

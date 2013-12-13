@@ -350,11 +350,11 @@ public:
   /*! Initializes quaternion using a rotation matrix \a R. */
   Quaternion (const mat3& R) {set(R);}
 
-  /*! Initializes quaternion using a rotation exressed as in angle and axis
+  /*! Initializes quaternion using a rotation expressed as in angle and axis
       format. */
   Quaternion (const double& angle, const vec3 &axis) {set(angle,axis);}
 
-  /*! Copies the values of quaterion Q. */
+  /*! Copies the values of quaternion Q. */
   void set(const Quaternion& Q)
     {w = Q.w; x = Q.x; y = Q.y; z = Q.z;}
 

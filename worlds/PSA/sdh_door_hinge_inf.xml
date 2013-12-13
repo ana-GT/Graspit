@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<world>
+	<graspableBody>
+		<filename>models/objects/PSA/door_hinge_inf.xml</filename>
+		<transform>
+			<fullTransform>(+0.707107 +0 -0.707107 +0)[+0 +0 +0]</fullTransform>
+		</transform>
+	</graspableBody>
+	<obstacle>
+		<filename>models/obstacles/table.xml</filename>
+		<transform>
+			<fullTransform>(+1 +0 +0 +0)[-14.0427 -610.34 +480.518]</fullTransform>
+		</transform>
+	</obstacle>
+	<robot>
+		<filename>models/robots/Schunk/Schunk.xml</filename>
+		<dofValues>+0 +0 +0 +0 +0 +0 +0 +0 </dofValues>
+		<transform>
+			<fullTransform>(+0 +1 +0 +0)[+3.17625 +0 +313.67]</fullTransform>
+		</transform>
+	</robot>
+	<camera>
+		<position>+272.699 -765.077 +352.95</position>
+		<orientation>+0.448511 +0.193347 -0.138026 +0.861629</orientation>
+		<focalDistance>+1855.64</focalDistance>
+	</camera>
+</world>

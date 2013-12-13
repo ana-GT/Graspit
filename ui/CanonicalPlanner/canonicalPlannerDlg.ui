@@ -21,9 +21,9 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QPushButton" name="getClasses_pushButton">
+       <widget class="QPushButton" name="plannerStartButton">
         <property name="text">
-         <string>Generate Types</string>
+         <string>Start planner</string>
         </property>
        </widget>
       </item>
@@ -37,9 +37,26 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QPushButton" name="readGraspFile_pushButton">
+       <widget class="QPushButton" name="readFileButton">
         <property name="text">
          <string>Read Grasp File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="showBaseGraspsButton">
+        <property name="text">
+         <string>show Base Grasps</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="indiceBox">
+        <property name="maximum">
+         <number>6</number>
+        </property>
+        <property name="singleStep">
+         <number>0</number>
         </property>
        </widget>
       </item>
@@ -56,8 +73,54 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
- <slots>
-  <slot>readGraspFile()</slot>
- </slots>
+ <connections>
+  <connection>
+   <sender>plannerStartButton</sender>
+   <signal>clicked()</signal>
+   <receiver>CanonicalPlannerDlgUI</receiver>
+   <slot>plannerStart_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>readFileButton</sender>
+   <signal>clicked()</signal>
+   <receiver>CanonicalPlannerDlgUI</receiver>
+   <slot>readFile_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>showBaseGraspsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>CanonicalPlannerDlgUI</receiver>
+   <slot>showBaseGrasps_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
