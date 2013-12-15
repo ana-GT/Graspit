@@ -52,7 +52,7 @@ class Body;
 class GraspTester : public EGPlanner
 {
 private:
-	//! The mutex used for synchronizig access to the candidate list and the solution list
+	//! The mutex used for synchronizing access to the candidate list and the solution list
 	QMutex mListMutex;
 	//! Saves the results of testing the candidates
 	std::list<GraspPlanningState*> mSolutionList;

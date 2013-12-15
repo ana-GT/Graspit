@@ -41,6 +41,10 @@ class  CanonicalPlannerDlg : public QDialog,
   void startPlanner();
   void stopPlanner();
 
+
+  int mCurrentBaseIndex;
+  int mCurrentSampleIndex;
+
  public:
  CanonicalPlannerDlg(QWidget *parent = 0) : QDialog(parent) {
     setupUi(this);
@@ -53,8 +57,8 @@ class  CanonicalPlannerDlg : public QDialog,
   void exitButton_clicked();
   void plannerStart_clicked();
   void readFile_clicked();
-  void showBaseGrasps_clicked();
+  void baseBox_valueChanged(int);
+  void sampleBox_valueChanged(int);
   void setMembers( Hand *_h, GraspableBody *_b );
-  void printInfo();  
 
 };

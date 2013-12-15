@@ -708,6 +708,10 @@ public:
 
   //! Moves the hand back until it is out of collision, then forward until a contact is made.
   virtual bool findInitialContact(double moveDist);
+
+  // Set to: Similar to jumpTo, but without interpolating
+  bool setTo( transf newTran, CollisionReport *contactReport );
+
 };
 
 #define ROBOT_H

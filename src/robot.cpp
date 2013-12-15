@@ -2380,3 +2380,24 @@ Robot::getJacobianJointToDOF(int chainNum){
 	}
 	return m;
 }
+
+/**
+ *
+ */
+bool Hand::setTo( transf newTran, CollisionReport *contactReport ) {
+	  int i, numCols;
+	  bool success;
+	  CollisionReport colReport;
+	  transf lastTran = getTran();
+	  if ( setTran(newTran) == FAILURE) return false;
+	  //we are only interested in collisions involving this body
+	  std::vector<Body*> interestList;
+	  //a robot will place all of its links in here
+	  getBodyList(&interestList);
+	  contactReport->clear();
+
+
+	  numCols = myWorld->getCollisionReport(&colReport, &interestList);
+	  if (!numCols) { return true; }
+	  else { return false; }
+}

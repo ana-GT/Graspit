@@ -157,7 +157,7 @@ signals:
 	void complete();
 
 public:
-	//! The constructor is desigend NOT to be called by sub-classes.
+	//! The constructor is designed NOT to be called by sub-classes.
 	EGPlanner(Hand *h);
 	virtual ~EGPlanner();
 	//! The type of this planner, for easier run-time check.

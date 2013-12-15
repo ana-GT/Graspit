@@ -33,15 +33,20 @@ class CanonPlanner : public EGPlanner {
     virtual void setModelState( const GraspPlanningState *_modelState );
 
     // graspSys *********************
+    void setObject( GraspableBody* _o );
     int addBaseGrasp( GraspPlanningState* _gps );
+    int addSampleGrasp( int _i, transf _T );
     bool makeGraspValid( int _i );
     position rotation;
     Quaternion translation;
 
     std::vector<GraspPlanningState*> mBaseGrasps;
-    std::vector< std::list<GraspPlanningState*> > mSampleGrasps;
+    std::vector< std::vector<GraspPlanningState*> > mSampleGrasps;
     PostureStateDOF* mOpenPosture;
-   
+    GraspableBody *mObject;
+
+    int sMaxMoveSteps;
+    double sDx;
     // graspSys *********************
 
 

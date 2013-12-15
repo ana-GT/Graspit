@@ -44,21 +44,40 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="showBaseGraspsButton">
+       <widget class="QLabel" name="baseLabel">
         <property name="text">
-         <string>show Base Grasps</string>
+         <string> Base grasp:</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="indiceBox">
+       <widget class="QSpinBox" name="baseBox">
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::UpDownArrows</enum>
+        </property>
+        <property name="specialValueText">
+         <string>0</string>
+        </property>
+        <property name="suffix">
+         <string/>
+        </property>
         <property name="maximum">
          <number>6</number>
         </property>
         <property name="singleStep">
-         <number>0</number>
+         <number>1</number>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="sampleLabel">
+        <property name="text">
+         <string>Sample grasp:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="sampleBox"/>
       </item>
       <item>
        <widget class="QPushButton" name="showGrasp_pushButton">
@@ -107,10 +126,26 @@
    </hints>
   </connection>
   <connection>
-   <sender>showBaseGraspsButton</sender>
-   <signal>clicked()</signal>
+   <sender>baseBox</sender>
+   <signal>valueChanged(int)</signal>
    <receiver>CanonicalPlannerDlgUI</receiver>
-   <slot>showBaseGrasps_clicked()</slot>
+   <slot>baseBox_valueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sampleBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>CanonicalPlannerDlgUI</receiver>
+   <slot>sampleBox_valueChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>20</x>

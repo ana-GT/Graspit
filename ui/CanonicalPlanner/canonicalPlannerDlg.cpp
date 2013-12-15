@@ -56,41 +56,13 @@ void CanonicalPlannerDlg::exitButton_clicked() {
  */
 void CanonicalPlannerDlg::plannerStart_clicked() {
 
-    // Create planner according to the type selected
-    SimAnnPlanner* mSP;
-    mSP = new SimAnnPlanner( mHand );
-
-    // Init planner
-    mSP->setModelState( mHandObjectState );
-
-    // Set planner settings
-    mSP->setEnergyType( ENERGY_CONTACT );
-
-    // Contact type
-    mSP->setContactType( CONTACT_PRESET );
-
-    // Number of steps
-    mSP->setMaxSteps( 70000 );
-
-    // Reset parameters (count)
-    mSP->resetPlanner();
-
-    // Check status
-    int status = mSP->getState();
-    if( status == READY ) { 
-	printf("Planner ready to run \n");
-	mSP->startPlanner();
-	printf("Before mainLoop \n");
-	//mSP->mainLoop();
-	printf("After main loop \n");
-	printf("Finished planner!! \n");
-    }
-    else { printf("Planner in a status other than ready \n"); }
-
-
-
-    printf("End clicked \n");
-
+	printf("Set start planner \n");
+	for( int i = 0; i < mPlanner->mBaseGrasps.size(); ++i ) {
+		printf("Making grasp %d valid \n", i);
+		mPlanner->makeGraspValid(i);
+		printf(" Number of grasps valid for %d: %d \n", i, mPlanner->mSampleGrasps[i].size() );
+	}
+	printf("End planner \n");
 
 }
 
@@ -100,7 +72,7 @@ void CanonicalPlannerDlg::plannerStart_clicked() {
 void CanonicalPlannerDlg::readFile_clicked() {
 
 	mPlanner = new CanonPlanner( mHand );
-
+	mPlanner->setObject( mObject );
     QString fn( QFileDialog::getOpenFileName( this,
 					      QString(),
 					      "/home/ana/Code/manipulation/graspTypes/data",
@@ -162,19 +134,50 @@ void CanonicalPlannerDlg::readFile_clicked() {
     std::cout << "Finished reading "<< mPlanner->mBaseGrasps.size() << std::endl;
 }
 
+
 /**
- * @function showBaseGrasps_clicked
- * @brief Show each of the 6 base grasps once per second
+ * @function baseBox_valueChanged
  */
-void CanonicalPlannerDlg::showBaseGrasps_clicked() {
+void CanonicalPlannerDlg::baseBox_valueChanged(int _i ) {
 
-		int index = indiceBox->value();
-		if( index < 0 && index >= mPlanner->mBaseGrasps.size() ) {
-			std::cout << "Index exceeds the number of base grasps"<< std::endl;
-		}
-		mPlanner->mBaseGrasps[index]->execute();
+	if( _i < 0 || _i >= mPlanner->mBaseGrasps.size() ) {
+		std::cout << "Index exceeds the number of base grasps YOU IDIOT!"<< std::endl;
+		return;
+	}
 
+	mCurrentBaseIndex = _i;
+	mPlanner->mBaseGrasps[mCurrentBaseIndex]->execute();
+	return;
 }
+
+/**
+ * @function sampleBox_valueChanged
+ */
+void CanonicalPlannerDlg::sampleBox_valueChanged(int _i ) {
+
+	if( _i < 0 || _i >= (mPlanner->mSampleGrasps[mCurrentBaseIndex]).size() ) {
+		std::cout << "Index exceeds the number of base grasps"<< std::endl;
+		return;
+	}
+
+	mCurrentSampleIndex = _i;
+	if( ! mPlanner->mSampleGrasps[mCurrentBaseIndex][mCurrentSampleIndex]->execute() ) {
+		printf("Execution false!!! \n");
+	}
+
+	// Get hand
+	transf T;
+	mat3 r;
+	vec3 t; t[0] = 300;
+	T.set( r, t);
+
+	transf ana = mPlanner->mSampleGrasps[mCurrentBaseIndex][mCurrentSampleIndex]->getPosition()->getCoreTran();
+	std::cout << "My trans: "<<ana << std::endl;
+	std::cout << "The 3900: "<<T << std::endl;
+	mHand->setTran(ana );
+	return;
+}
+
 
 /**
  * @function setMembers
@@ -196,29 +199,3 @@ void CanonicalPlannerDlg::setMembers( Hand *_h, GraspableBody *_b ) {
 }
 
 
-/**
- * @function printInfo
- */
-void CanonicalPlannerDlg::printInfo() {
-    printf("Print \n");
-    /*
-  assert( mWorld->getCurrentHand() );
-  printf(" Num hand dof: %d \n", mWorld->getCurrentHand()->getNumDOF() );
- // Get grasp
- Grasp* g; g = mWorld->getCurrentHand()->getGrasp();	
-  if( g == NULL ) { printf("No grasp! \n"); }
-  else { 
-	 printf("Grasp! \n"); 
-
-     // Close it, in case it was not closed
-  	mWorld->getCurrentHand()->autoGrasp(true);
-  	mWorld->updateGrasps();
-     // Create a GWS 
-     GWS* gws; gws = g->addGWS("L1 Norm");
-    g->update(Grasp::ALL_DIMENSIONS);
-    bool isForceClosure = gws->forceClosure;
-    if( isForceClosure == false ) { printf("[BAD] It is not force closure! \n"); }
-    else { printf("[GOOD] It is force closure! \n");}
- }
-  */
-}
