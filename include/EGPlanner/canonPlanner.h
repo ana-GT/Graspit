@@ -4,57 +4,76 @@
  */
 #pragma once
 
+#include <QObject>
+#include <QThread>
 #include <vector>
-#include <list>
-#include "egPlanner.h"
 #include "EGPlanner/searchStateImpl.h"
 
 class Hand;
 class GraspPlanningState;
-class SimAnn;
 
 class Body;
 class SoSensor;
-class SearchEnergy;
-
 
 /**
  * @class CanonPlanner
  */
-class CanonPlanner : public EGPlanner {
+class CanonPlanner : public QThread {
+
+	Q_OBJECT
+
+protected:
+	CanonPlanner() {}
+
+	Hand *mHand;
+	GraspableBody *mObject;
+
+	GraspPlanningState *mCurrentState;
+
+	double sMaxTime;
+    int sMaxMoveSteps;
+    double sDx;
+
+	GraspPlanningState *mTargetState;
+
+	// Render options
+	int mRenderType, mRenderCount;
+	// A decision is made whether to put in a redraw request to the scene graph
+	void render();
+
+	bool checkTerminationConditions();
+
+	// For single-threaded operation
+	SoSensor *mIdleSensor;
+	static void sensorCallback( void *data, SoSensor*);
+
+    std::vector<GraspPlanningState*> mBaseGrasps;
+    std::vector< std::vector<GraspPlanningState*> > mSampleGrasps;
+
 
  public:
 
     CanonPlanner( Hand *_h );
     ~CanonPlanner();
-    virtual PlannerType getType() { return PLANNER_GT; } // Just to put a name
-    void setAnnealingParameters( AnnealingType _y );
-    virtual bool initialized();
-    virtual void setModelState( const GraspPlanningState *_modelState );
 
-    // graspSys *********************
-    void setObject( GraspableBody* _o );
+	void init();
+    bool readBaseGraspFile( std::string _filename );
     int addBaseGrasp( GraspPlanningState* _gps );
     int addSampleGrasp( int _i, transf _T );
     bool makeGraspValid( int _i );
-    position rotation;
-    Quaternion translation;
+	void mainLoop();
 
-    std::vector<GraspPlanningState*> mBaseGrasps;
-    std::vector< std::vector<GraspPlanningState*> > mSampleGrasps;
     PostureStateDOF* mOpenPosture;
-    GraspableBody *mObject;
 
-    int sMaxMoveSteps;
-    double sDx;
-    // graspSys *********************
+    /** Utilities */
+    GraspPlanningState *getBaseGrasp( int _i );
+    GraspPlanningState *getSampleGrasp( int _i, int _j );
+    bool showBaseGrasp( int _i );
+    bool showSampleGrasp( int _i, int _j );
+    int getNumBaseGrasps() { return mBaseGrasps.size(); }
+    int getNumSampleGrasps( int _i ) { return mSampleGrasps[_i].size(); }
+    void setRenderType( RenderType _r ) { mRenderType = _r; }
+    Hand *getHand() { return mHand; }
 
-
- protected:
-    CanonPlanner() {};
-    void mainLoop();
-    void resetParameters();
-
-    SimAnn *mSimAnn;
 
 };

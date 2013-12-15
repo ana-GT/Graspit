@@ -1,4 +1,5 @@
 /**
+ * @file canonicalPlannerDlg.cpp
  * @Authors: A. Huaman
  */
 
@@ -27,20 +28,21 @@
 #include "simAnnPlanner.h"
 #include "EGPlanner/canonPlanner.h"
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
 
+/**
+ * @function init
+ */
 void CanonicalPlannerDlg::init() {
 
 }
 
-/*!
-  Deletes the grasp_manager.
-*/
-void CanonicalPlannerDlg::destroy() 
-{
-    if (masterFile.isOpen()) masterFile.close();
+/**
+ * @function destroy
+ * @brief Deletes the grasp_manager.
+ */
+void CanonicalPlannerDlg::destroy()  {
+
+	if (masterFile.isOpen()) masterFile.close();
 }
 
 
@@ -53,17 +55,11 @@ void CanonicalPlannerDlg::exitButton_clicked() {
 
 /**
  * @function plannerStart_clicked
+ * @brief Make grasps valid, close them and store them
  */
 void CanonicalPlannerDlg::plannerStart_clicked() {
 
-	printf("Set start planner \n");
-	for( int i = 0; i < mPlanner->mBaseGrasps.size(); ++i ) {
-		printf("Making grasp %d valid \n", i);
-		mPlanner->makeGraspValid(i);
-		printf(" Number of grasps valid for %d: %d \n", i, mPlanner->mSampleGrasps[i].size() );
-	}
-	printf("End planner \n");
-
+	mPlanner->mainLoop();
 }
 
 /**
@@ -72,66 +68,14 @@ void CanonicalPlannerDlg::plannerStart_clicked() {
 void CanonicalPlannerDlg::readFile_clicked() {
 
 	mPlanner = new CanonPlanner( mHand );
-	mPlanner->setObject( mObject );
+
     QString fn( QFileDialog::getOpenFileName( this,
 					      QString(),
 					      "/home/ana/Code/manipulation/graspTypes/data",
 					      "Grasp files (*.txt)") );
     if( fn.isEmpty() ) { return; }
 
-    //fileName = fn;
-    std::cout << "Filename :"<< fn.toStdString() << std::endl;
-    
-    std::ifstream input;
-    std::string line;
-    
-    double px, py, pz;
-    double nx, ny, nz;
-
-    input.open( fn.toStdString().c_str(), std::ios::out );
-    std::getline( input, line );
-
-    std::cout << "Grasp object name: "<< line << std::endl;
-    
-    for( int i = 0; i < 6; ++i ) {
-
-    GraspPlanningState *gps;
-    vec3 pos; Quaternion rot;
-    vec3 z0(0,0,1);
-    vec3 n;
-
-    gps = new GraspPlanningState( mHand );
-    gps->setObject( mObject );
-
-	std::getline( input, line );
-	std::stringstream(line) >> pos[0] >> pos[1] >> pos[2];
-	std::getline( input, line );
-	std::stringstream(line) >> n[0] >> n[1] >> n[2];
-
-	// Set position based on the read input
-	// Wrist position + orientation
-	gps->setPositionType( SPACE_COMPLETE );
-	gps->setPostureType( POSE_DOF );
-	gps->setRefTran( mObject->getTran() );
-	gps->reset();
-
-	// Set initial rotation
-	vec3 nn = normalise(n);
-	double dot = z0 % nn;
-	double angle = acos( dot );
-	vec3 cross = z0 * nn;
-	vec3 axis = normalise( cross );
-	rot = Quaternion( angle, axis );
-
-	// Set position in gps
-	transf Tf( rot, pos );
-	gps->getPosition()->setTran( Tf );
-	gps->getPosture()->copyValuesFrom( mPlanner->mOpenPosture );
-	mPlanner->addBaseGrasp( gps );
-
-    }
-
-    std::cout << "Finished reading "<< mPlanner->mBaseGrasps.size() << std::endl;
+    mPlanner->readBaseGraspFile( fn.toStdString() );
 }
 
 
@@ -140,42 +84,30 @@ void CanonicalPlannerDlg::readFile_clicked() {
  */
 void CanonicalPlannerDlg::baseBox_valueChanged(int _i ) {
 
-	if( _i < 0 || _i >= mPlanner->mBaseGrasps.size() ) {
-		std::cout << "Index exceeds the number of base grasps YOU IDIOT!"<< std::endl;
+	if( mPlanner == NULL ) {
+		std::cout << "No planner yet. Load base grasps first."<< std::endl;
 		return;
 	}
 
-	mCurrentBaseIndex = _i;
-	mPlanner->mBaseGrasps[mCurrentBaseIndex]->execute();
+	baseBox->setRange(0, mPlanner->getNumBaseGrasps() - 1 );
+	sampleBox->setRange(0, mPlanner->getNumSampleGrasps(baseBox->value()) - 1 );
+	mPlanner->showBaseGrasp( baseBox->value() );
 	return;
 }
 
 /**
  * @function sampleBox_valueChanged
  */
-void CanonicalPlannerDlg::sampleBox_valueChanged(int _i ) {
+void CanonicalPlannerDlg::sampleBox_valueChanged(int _j ) {
 
-	if( _i < 0 || _i >= (mPlanner->mSampleGrasps[mCurrentBaseIndex]).size() ) {
-		std::cout << "Index exceeds the number of base grasps"<< std::endl;
+	if( mPlanner == NULL ) {
+		std::cout << "No planner yet. Load base grasps first."<< std::endl;
 		return;
 	}
 
-	mCurrentSampleIndex = _i;
-	if( ! mPlanner->mSampleGrasps[mCurrentBaseIndex][mCurrentSampleIndex]->execute() ) {
-		printf("Execution false!!! \n");
-	}
+	sampleBox->setRange(0, mPlanner->getNumSampleGrasps(baseBox->value()) - 1 );
+	mPlanner->showSampleGrasp( baseBox->value(), _j );
 
-	// Get hand
-	transf T;
-	mat3 r;
-	vec3 t; t[0] = 300;
-	T.set( r, t);
-
-	transf ana = mPlanner->mSampleGrasps[mCurrentBaseIndex][mCurrentSampleIndex]->getPosition()->getCoreTran();
-	std::cout << "My trans: "<<ana << std::endl;
-	std::cout << "The 3900: "<<T << std::endl;
-	mHand->setTran(ana );
-	return;
 }
 
 
