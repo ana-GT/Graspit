@@ -31,7 +31,8 @@ protected:
 	GraspPlanningState *mCurrentState;
 
 	double sMaxTime;
-    int sMaxMoveSteps;
+    int sMaxTransSteps;
+    int sMaxRotSteps;
     double sDx;
 
 	GraspPlanningState *mTargetState;

@@ -14,7 +14,7 @@
 #include <sstream>
 
 #include "canonPlanner.h"
-
+#include "matvec3D.h"
 
 /**
  * @function CanonPlanner
@@ -37,7 +37,8 @@ CanonPlanner::CanonPlanner( Hand *_h ) {
 	openPose[6] = -1.5708; openPose[7] = -1.5708;
 	mOpenPosture->readFromArray(openPose);
 
-	sMaxMoveSteps = 50;
+	sMaxTransSteps = 50;
+	sMaxRotSteps = 6;
 	sDx = 10; // 1 cm = 0.01*1000
 }
 
@@ -142,10 +143,10 @@ int CanonPlanner::addSampleGrasp( int _i, transf _T ) {
 	gps->setObject( mObject );
 	gps->setPositionType( SPACE_COMPLETE );
 	gps->setPostureType( POSE_DOF );
-	gps->setRefTran( mObject->getTran() );
+	gps->setRefTran( mBaseGrasps[_i]->getRefTran() );
 	gps->reset();
 	gps->getPosition()->setTran( _T );
-	gps->getPosture()->copyValuesFrom( mOpenPosture );
+	gps->getPosture()->copyValuesFrom( mBaseGrasps[_i]->getPosture() );
 
 	mSampleGrasps[_i].push_back( gps );
 
@@ -178,14 +179,23 @@ bool CanonPlanner::makeGraspValid( int _i ) {
 	Tmove = Tnow;
 	vec3 trans = Tnow.translation();
 	vec3 tf;
-	for( int j = 0; j < sMaxMoveSteps; ++j ) {
+	transf trans2;
+	for( int j = 0; j < sMaxTransSteps; ++j ) {
 		tf = trans - N*sDx*j;
+
 		Tmove.set( Tnow.rotation(), tf );
-		CollisionReport contactReport;
-		if( mHand->setTo( Tmove*mBaseGrasps[_i]->getRefTran(), &contactReport ) == true ) {
-			addSampleGrasp( _i, Tmove );
+
+		for( int k = 0; k < sMaxRotSteps; ++k ) {
+			double ang = ( 3.1416 / sMaxRotSteps )*k;
+			trans2 = Tmove*rotate_transf( ang, N );
+
+			CollisionReport contactReport;
+			if( mHand->setTo( trans2*mBaseGrasps[_i]->getRefTran(), &contactReport ) == true ) {
+				addSampleGrasp( _i, trans2 );
+			}
 		}
-	}
+
+	} // end translation for
 
 	if( mSampleGrasps[_i].size() > 0 ) { return true; }
 	else { return false; }
