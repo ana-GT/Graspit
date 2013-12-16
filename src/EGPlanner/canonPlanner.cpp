@@ -6,6 +6,7 @@
 #include "grasp.h"
 #include "worldElement.h"
 #include "robot.h"
+#include "world.h"
 
 #include "debug.h"
 
@@ -37,7 +38,7 @@ CanonPlanner::CanonPlanner( Hand *_h ) {
 	openPose[6] = -1.5708; openPose[7] = -1.5708;
 	mOpenPosture->readFromArray(openPose);
 
-	sMaxTransSteps = 50;
+	sMaxTransSteps = 20;
 	sMaxRotSteps = 6;
 	sDx = 10; // 1 cm = 0.01*1000
 }
@@ -93,7 +94,6 @@ bool CanonPlanner::readBaseGraspFile( std::string _filename ) {
     	gps->setPositionType( SPACE_COMPLETE );
     	gps->setPostureType( POSE_DOF );
     	gps->setRefTran( mObject->getTran() );
-    	std::cout << "Ref tran: \n"<< mObject->getTran() << std::endl;
     	gps->reset();
 
     	// Set initial rotation
@@ -102,8 +102,7 @@ bool CanonPlanner::readBaseGraspFile( std::string _filename ) {
     	double angle = acos( dot );
     	vec3 cross = z0 * nn;
     	vec3 axis = normalise( cross );
-    	std::cout << "Grasp read: "<<i<< std::endl;
-    	std::cout <<"Axis:"<<axis<<" angle: "<< angle << std::endl;
+
     	rot = Quaternion( angle, axis );
 
     	// Set position in grasp planning state
@@ -113,7 +112,6 @@ bool CanonPlanner::readBaseGraspFile( std::string _filename ) {
 
     }
 
-    std::cout << "Finished reading "<< mBaseGrasps.size() << std::endl;
 	return true;
 }
 
@@ -169,25 +167,21 @@ bool CanonPlanner::makeGraspValid( int _i ) {
 	mBaseGrasps[_i]->execute();
 
 	// Get the normal
-	transf Tnow = mBaseGrasps[_i]->getPosition()->getCoreTran();
-	mat3 R = Tnow.affine();
-	vec3 N = R.row(2);
-	transf Tmove;
-	std::cout << "R: \n"<<R << std::endl;
+	transf Tbase = mBaseGrasps[_i]->getPosition()->getCoreTran();
+	vec3 N = (Tbase.affine()).row(2);
 
-
-	Tmove = Tnow;
-	vec3 trans = Tnow.translation();
-	vec3 tf;
+	transf Tsample = Tbase;
+	vec3 trans = Tbase.translation();
+	double ang;
 	transf trans2;
-	for( int j = 0; j < sMaxTransSteps; ++j ) {
-		tf = trans - N*sDx*j;
 
-		Tmove.set( Tnow.rotation(), tf );
+	for( int j = 0; j < sMaxTransSteps; ++j ) {
+
+		Tsample.set( Tbase.rotation(), trans - N*sDx*j );
 
 		for( int k = 0; k < sMaxRotSteps; ++k ) {
-			double ang = ( 3.1416 / sMaxRotSteps )*k;
-			trans2 = Tmove*rotate_transf( ang, N );
+			ang = ( M_PI / sMaxRotSteps )*k;
+			trans2 = Tsample*rotate_transf( ang, N );
 
 			CollisionReport contactReport;
 			if( mHand->setTo( trans2*mBaseGrasps[_i]->getRefTran(), &contactReport ) == true ) {
@@ -199,6 +193,58 @@ bool CanonPlanner::makeGraspValid( int _i ) {
 
 	if( mSampleGrasps[_i].size() > 0 ) { return true; }
 	else { return false; }
+}
+
+/***
+ * @function closeSampleGrasps
+ */
+bool CanonPlanner::closeSampleGrasps( int _i ) {
+
+	// Proximal: 1,3,6
+	double proximal[3] = {1,3,6};
+	double distal[3] = {2,4,7};
+	int counter; int maxCounter;
+	double val;
+	maxCounter = 100;
+	for( int j = 0; j < mSampleGrasps[_i].size(); ++j ) {
+
+		GraspPlanningState* gps = mSampleGrasps[_i][j];
+		for( int k = 0; k < 3; ++k ) {
+			val = gps->getPosture()->getVariable( proximal[k] )->getValue();
+			counter = 0;
+			while(counter < maxCounter ) {
+				val += 0.05;
+				gps->getPosture()->getVariable( proximal[k] )->setValue( val );
+				gps->execute();
+
+				if( gps->getHand()->getWorld()->noCollision() == false ) {
+					gps->getPosture()->getVariable( proximal[k] )->setValue( val - 0.05 );
+					break;
+				}
+				counter++;
+			}
+		} // end proximal loop
+
+
+		for( int k = 0; k < 3; ++k ) {
+			val = gps->getPosture()->getVariable( distal[k] )->getValue();
+			counter = 0;
+			while(counter < maxCounter ) {
+				val += 0.05;
+				gps->getPosture()->getVariable( distal[k] )->setValue( val );
+				gps->execute();
+
+				if( gps->getHand()->getWorld()->noCollision() == false ) {
+					gps->getPosture()->getVariable( distal[k] )->setValue( val - 0.05 );
+					break;
+				}
+				counter++;
+			}
+		} // end proximal loop
+
+	}
+
+	return true;
 }
 
 
@@ -214,6 +260,12 @@ void CanonPlanner::mainLoop() {
 		std::cout << "Valid samples ["<<i<<"]: "<< mSampleGrasps[i].size() << std::endl;
 	}
 
+	for( int i = 0; i < mBaseGrasps.size(); ++i ) {
+		std::cout<<"Making sample grasps ["<<i<<"] close"<<std::endl;
+		closeSampleGrasps(i);
+	}
+
+	std::cout << "Done with main loop "<< std::endl;
 }
 
 

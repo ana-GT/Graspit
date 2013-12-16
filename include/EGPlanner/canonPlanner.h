@@ -62,6 +62,7 @@ protected:
     int addBaseGrasp( GraspPlanningState* _gps );
     int addSampleGrasp( int _i, transf _T );
     bool makeGraspValid( int _i );
+    bool closeSampleGrasps( int _i );
 	void mainLoop();
 
     PostureStateDOF* mOpenPosture;
