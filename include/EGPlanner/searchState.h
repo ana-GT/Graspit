@@ -290,6 +290,9 @@ public:
 	void setObject(GraspableBody *b){mTargetObject = b;}
 	GraspableBody *getObject() const {return mTargetObject;}
 
+	// Ana added this
+	transf getRefTran() { return mRefTran; }
+
 	//! Changes the WAY we store the hand position, not necessarily the position itself
 	void setPositionType(StateType type, bool sticky = false);
 	//! Changes the WAY we store the hand posture, not necessarily the posture itself

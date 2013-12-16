@@ -71,7 +71,7 @@ void CanonicalPlannerDlg::readFile_clicked() {
 
     QString fn( QFileDialog::getOpenFileName( this,
 					      QString(),
-					      "/home/ana/Code/manipulation/graspTypes/data",
+					      "/home/ana/Research/Code/manipulation/graspTypes/data",
 					      "Grasp files (*.txt)") );
     if( fn.isEmpty() ) { return; }
 

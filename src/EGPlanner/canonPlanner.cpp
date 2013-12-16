@@ -170,11 +170,10 @@ bool CanonPlanner::makeGraspValid( int _i ) {
 	// Get the normal
 	transf Tnow = mBaseGrasps[_i]->getPosition()->getCoreTran();
 	mat3 R = Tnow.affine();
-	vec3 N( R.element(0,2), R.element(1,2), R.element(2,2));
+	vec3 N = R.row(2);
 	transf Tmove;
-	printf("X: %f %f %f \n", R.element(0,0), R.element(1,0), R.element(2,0) );
-	printf("Y: %f %f %f \n", R.element(0,1), R.element(1,1), R.element(2,1) );
-	printf("Z: %f %f %f \n", N[0], N[1], N[2]);
+	std::cout << "R: \n"<<R << std::endl;
+
 
 	Tmove = Tnow;
 	vec3 trans = Tnow.translation();
@@ -183,7 +182,7 @@ bool CanonPlanner::makeGraspValid( int _i ) {
 		tf = trans - N*sDx*j;
 		Tmove.set( Tnow.rotation(), tf );
 		CollisionReport contactReport;
-		if( mHand->setTo( Tmove, &contactReport ) == true ) {
+		if( mHand->setTo( Tmove*mBaseGrasps[_i]->getRefTran(), &contactReport ) == true ) {
 			addSampleGrasp( _i, Tmove );
 		}
 	}
