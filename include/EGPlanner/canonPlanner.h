@@ -34,6 +34,7 @@ protected:
     int sMaxTransSteps;
     int sMaxRotSteps;
     double sDx;
+    double sRotStep;
 
 	GraspPlanningState *mTargetState;
 
@@ -60,6 +61,7 @@ protected:
 	void init();
     bool readBaseGraspFile( std::string _filename );
     int addBaseGrasp( GraspPlanningState* _gps );
+    int addSampleGrasp( int _i, GraspPlanningState* _gps );
     int addSampleGrasp( int _i, transf _T );
     bool makeGraspValid( int _i );
     bool closeSampleGrasps( int _i );

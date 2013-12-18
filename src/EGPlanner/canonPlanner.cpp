@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <time.h>
 
 #include "canonPlanner.h"
 #include "matvec3D.h"
@@ -41,6 +42,7 @@ CanonPlanner::CanonPlanner( Hand *_h ) {
 	sMaxTransSteps = 20;
 	sMaxRotSteps = 6;
 	sDx = 10; // 1 cm = 0.01*1000
+	sRotStep = 20.0*M_PI / 180.0;
 }
 
 /**
@@ -129,6 +131,20 @@ int CanonPlanner::addBaseGrasp( GraspPlanningState* _gps ) {
 /**
  * @function addSampleGrasp
  */
+int CanonPlanner::addSampleGrasp( int _i, GraspPlanningState* _gps ) {
+
+	if( _i >= mSampleGrasps.size() || _i < 0 ) {
+		std::cout << "Sample grasps only have "<< mSampleGrasps.size() << " groups "<< std::endl;
+		return -1;
+	}
+
+	mSampleGrasps[_i].push_back( _gps);
+	return mSampleGrasps[_i].size();
+}
+
+/**
+ * @function addSampleGrasp
+ */
 int CanonPlanner::addSampleGrasp( int _i, transf _T ) {
 
 	if( _i >= mSampleGrasps.size() || _i < 0 ) {
@@ -136,15 +152,10 @@ int CanonPlanner::addSampleGrasp( int _i, transf _T ) {
 		return -1;
 	}
 
-	GraspPlanningState* gps;
-	gps = new GraspPlanningState( mHand );
-	gps->setObject( mObject );
-	gps->setPositionType( SPACE_COMPLETE );
-	gps->setPostureType( POSE_DOF );
-	gps->setRefTran( mBaseGrasps[_i]->getRefTran() );
-	gps->reset();
+	// Do not directly do gps( base ) or it will modify base :S
+	GraspPlanningState* gps = new GraspPlanningState( mHand );
+	gps->copyFrom( mBaseGrasps[_i] );
 	gps->getPosition()->setTran( _T );
-	gps->getPosture()->copyValuesFrom( mBaseGrasps[_i]->getPosture() );
 
 	mSampleGrasps[_i].push_back( gps );
 
@@ -183,8 +194,7 @@ bool CanonPlanner::makeGraspValid( int _i ) {
 			ang = ( M_PI / sMaxRotSteps )*k;
 			trans2 = Tsample*rotate_transf( ang, N );
 
-			CollisionReport contactReport;
-			if( mHand->setTo( trans2*mBaseGrasps[_i]->getRefTran(), &contactReport ) == true ) {
+			if( mHand->setTo( trans2*mBaseGrasps[_i]->getRefTran() ) == true ) {
 				addSampleGrasp( _i, trans2 );
 			}
 		}
@@ -201,46 +211,34 @@ bool CanonPlanner::makeGraspValid( int _i ) {
 bool CanonPlanner::closeSampleGrasps( int _i ) {
 
 	// Proximal: 1,3,6
-	double proximal[3] = {1,3,6};
-	double distal[3] = {2,4,7};
-	int counter; int maxCounter;
-	double val;
-	maxCounter = 100;
+	int proximal[3] = {1,3,6};
+	int distal[3] = {2,4,7};
+
+	bool renderIt = false;
+	bool stopAtContact = false;
+
+	double *desiredSteps =  new double[ mHand->getNumDOF()];
+	for( int k = 0; k < mHand->getNumDOF(); ++k ) {  desiredSteps[k] = sRotStep; }
+	double *desiredVals = new double[ mHand->getNumDOF()];
+
 	for( int j = 0; j < mSampleGrasps[_i].size(); ++j ) {
-
 		GraspPlanningState* gps = mSampleGrasps[_i][j];
-		for( int k = 0; k < 3; ++k ) {
-			val = gps->getPosture()->getVariable( proximal[k] )->getValue();
-			counter = 0;
-			while(counter < maxCounter ) {
-				val += 0.05;
-				gps->getPosture()->getVariable( proximal[k] )->setValue( val );
-				gps->execute();
 
-				if( gps->getHand()->getWorld()->noCollision() == false ) {
-					gps->getPosture()->getVariable( proximal[k] )->setValue( val - 0.05 );
-					break;
-				}
-				counter++;
-			}
-		} // end proximal loop
+		// Set hand to position
+		gps->execute();
 
+		// Proximal
+		gps->getPosture()->getHandDOF( desiredVals );
 
-		for( int k = 0; k < 3; ++k ) {
-			val = gps->getPosture()->getVariable( distal[k] )->getValue();
-			counter = 0;
-			while(counter < maxCounter ) {
-				val += 0.05;
-				gps->getPosture()->getVariable( distal[k] )->setValue( val );
-				gps->execute();
+		desiredVals[ proximal[0] ] = mHand->getDOF( proximal[0] )->getMax();
+		desiredVals[ proximal[1] ] = mHand->getDOF( proximal[1] )->getMax();
+		desiredVals[ proximal[2] ] = mHand->getDOF( proximal[2] )->getMax();
 
-				if( gps->getHand()->getWorld()->noCollision() == false ) {
-					gps->getPosture()->getVariable( distal[k] )->setValue( val - 0.05 );
-					break;
-				}
-				counter++;
-			}
-		} // end proximal loop
+		//mHand->moveDOFToContacts( desiredVals, desiredSteps, stopAtContact, renderIt );
+		double 	*dof = new double[ mHand->getNumDOF()];
+		gps->getPosture()->getHandDOF(dof);
+		gps->getPosture()->storeHandDOF(dof);
+
 
 	}
 
@@ -254,15 +252,27 @@ bool CanonPlanner::closeSampleGrasps( int _i ) {
  */
 void CanonPlanner::mainLoop() {
 
+	clock_t ts, tf;
+	double dt;
+
+	ts = clock();
 	for( int i = 0; i < mBaseGrasps.size(); ++i ) {
 		std::cout<<"Making grasp ["<<i<<"] valid"<<std::endl;
 		makeGraspValid(i);
 		std::cout << "Valid samples ["<<i<<"]: "<< mSampleGrasps[i].size() << std::endl;
 	}
+	tf = clock();
+	dt = (double)(tf - ts)/CLOCKS_PER_SEC;
+
+	std::cout << "Time for making grasps valid: "<< dt << std::endl;
 
 	for( int i = 0; i < mBaseGrasps.size(); ++i ) {
+		ts = clock();
 		std::cout<<"Making sample grasps ["<<i<<"] close"<<std::endl;
 		closeSampleGrasps(i);
+		tf = clock();
+		dt = (double)(tf - ts)/CLOCKS_PER_SEC;
+		std::cout << "Time in closing "<<i<<": "<<dt<< std::endl;
 	}
 
 	std::cout << "Done with main loop "<< std::endl;

@@ -66,7 +66,7 @@ class KinematicChain {
   int chainNum;
   
   //! The number of the first joint in this chain in the robot's list of joints
-  /*! This allows us to compute correspondances between joints in this chain's
+  /*! This allows us to compute correspondences between joints in this chain's
 	  list and joints in the robot's overall list, which spans all chains.*/
   int firstJointNum;
 

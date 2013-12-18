@@ -710,7 +710,7 @@ public:
   virtual bool findInitialContact(double moveDist);
 
   // Set to: Similar to jumpTo, but without interpolating
-  bool setTo( transf newTran, CollisionReport *contactReport );
+  bool setTo( transf newTran );
 
 };
 

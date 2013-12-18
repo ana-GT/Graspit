@@ -2241,7 +2241,7 @@ steps will be rendered.
 
 If \a stopAtContact is set and the execution is in static mode, movement
 will stop as soon as any contact is made. Otherwise, movement will continue
-untill all joints have been stopped and no movement is possible.
+until all joints have been stopped and no movement is possible.
 
 If you want the opposite motion, just pass a negative \a speedFactor.
 */
@@ -2382,22 +2382,11 @@ Robot::getJacobianJointToDOF(int chainNum){
 }
 
 /**
- *
+ * @function setTo
+ * @brief Set hand to position defined by newTran. Returns true if it is collision free, false otherwise
  */
-bool Hand::setTo( transf newTran, CollisionReport *contactReport ) {
-	  int i, numCols;
-	  bool success;
-	  CollisionReport colReport;
-	  transf lastTran = getTran();
+bool Hand::setTo( transf newTran ) {
+
 	  if ( setTran(newTran) == FAILURE) return false;
-	  //we are only interested in collisions involving this body
-	  std::vector<Body*> interestList;
-	  //a robot will place all of its links in here
-	  getBodyList(&interestList);
-	  contactReport->clear();
-
-
-	  numCols = myWorld->getCollisionReport(&colReport, &interestList);
-	  if (!numCols) { return true; }
-	  else { return false; }
+	  return getWorld()->noCollision( this );
 }
