@@ -26,8 +26,8 @@
 #include "EGPlanner/searchState.h"
 
 #include "simAnnPlanner.h"
-#include "canonPlanner/sampling.h"
-
+#include "canonPlanner/SASampling.h"
+#include "canonPlanner/UniSampling.h"
 
 /**
  * @function init
@@ -41,10 +41,8 @@ void SamplingDlg::init() {
  * @brief Deletes the grasp_manager.
  */
 void SamplingDlg::destroy()  {
-
-	if (masterFile.isOpen()) masterFile.close();
+    if (masterFile.isOpen()) masterFile.close();
 }
-
 
 /**
  *  @function exitButton_clicked
@@ -57,8 +55,8 @@ void SamplingDlg::exitButton_clicked() {
  * @function sampleSAButton_clicked
  */
 void SamplingDlg::sampleSAButton_clicked() {
-	printf("Sample SA CLICKED! \n");
-	mSampling->setCurrentState( mHandObjectState );
+
+	mSASampling->setCurrentState( mHandObjectState );
 
 	PositionState* ps = mHandObjectState->getPosition();
 	for( int i = 0; i < ps->getNumVariables(); ++i ) {
@@ -69,69 +67,69 @@ void SamplingDlg::sampleSAButton_clicked() {
 
 
 	for( int i = 0; i < 30; ++i ) {
-	mSampling->storeGrasp( mSampling->SA_neighborState( mHandObjectState ) );
+	    mSASampling->storeGrasp( mSASampling->sampleNeighbor( mHandObjectState ) );
 	}
 
 	std::cout << "Generated samples fine with SA" << std::endl;
+	
+	return;
+}
+
+
+/**
+ * @function sampleUniButton_clicked
+ */
+void SamplingDlg::sampleUniButton_clicked() {
+
+	mUniSampling->setCurrentState( mHandObjectState );
+
+	PositionState* ps = mHandObjectState->getPosition();
+	for( int i = 0; i < ps->getNumVariables(); ++i ) {
+		std::cout << "Variable name: "<< ps->getVariable(i)->getName().toStdString() << std::endl;
+		std::cout << "Minimum: "<< ps->getVariable(i)->mMinVal << std::endl;
+		std::cout << "Maximum: "<< ps->getVariable(i)->mMaxVal << std::endl;
+	}
+
+
+	for( int i = 0; i < 30; ++i ) {
+	mUniSampling->storeGrasp( mUniSampling->sampleNeighbor( mHandObjectState ) );
+	}
+
+	std::cout << "Generated samples fine with Uni" << std::endl;
 
 	return;
 }
+
 
 /**
  * @function sampleSASpinBox_valueChanged
  */
 void SamplingDlg::sampleSASpinBox_valueChanged(int _i ) {
 
-	if( mSampling == NULL ) {
+	if( mSASampling == NULL ) {
 		std::cout << "No sampler yet. Generate samples first."<< std::endl;
 		return;
 	}
 
-	sampleSASpinBox->setRange(0, mSampling->getNumGrasps() - 1 );
-	mSampling->showGrasp( _i );
+	sampleSASpinBox->setRange(0, mSASampling->getNumGrasps() - 1 );
+	mSASampling->showGrasp( _i );
 	return;
 
 }
 
 /**
- * @function plannerStart_clicked
- * @brief Make grasps valid, close them and store them
+ * @function sampleUniSpinBox_valueChanged
  */
-void SamplingDlg::samplingStart_clicked() {
+void SamplingDlg::sampleUniSpinBox_valueChanged(int _i ) {
 
-    //	mPlanner->mainLoop();
-}
-
-
-/**
- * @function baseBox_valueChanged
- */
-void SamplingDlg::baseBox_valueChanged(int _i ) {
-    /*
-	if( mPlanner == NULL ) {
-		std::cout << "No planner yet. Load base grasps first."<< std::endl;
-		return;
+	if( mUniSampling == NULL ) {
+	    std::cout << "No sampler yet. Generate samples first."<< std::endl;
+	    return;
 	}
 
-	baseBox->setRange(0, mPlanner->getNumBaseGrasps() - 1 );
-	sampleBox->setRange(0, mPlanner->getNumSampleGrasps(baseBox->value()) - 1 );
-	mPlanner->showBaseGrasp( baseBox->value() );*/
+	sampleUniSpinBox->setRange(0, mUniSampling->getNumGrasps() - 1 );
+	mUniSampling->showGrasp( _i );
 	return;
-}
-
-/**
- * @function sampleBox_valueChanged
- */
-void SamplingDlg::sampleBox_valueChanged(int _j ) {
-    /*
-	if( mPlanner == NULL ) {
-		std::cout << "No planner yet. Load base grasps first."<< std::endl;
-		return;
-	}
-
-	sampleBox->setRange(0, mPlanner->getNumSampleGrasps(baseBox->value()) - 1 );
-	mPlanner->showSampleGrasp( baseBox->value(), _j );
-    */
 }
 
 
@@ -140,9 +138,12 @@ void SamplingDlg::sampleBox_valueChanged(int _j ) {
  */
 void SamplingDlg::setMembers( Hand *_h, GraspableBody *_b ) {
 
-  mSampling = NULL;
+  mSASampling = NULL;
+  mUniSampling = NULL;
+
   mHand = _h;
   mObject = _b;
+
   mHand->getGrasp()->setObjectNoUpdate( mObject );
   mHand->getGrasp()->setGravity( false );
 
@@ -151,9 +152,10 @@ void SamplingDlg::setMembers( Hand *_h, GraspableBody *_b ) {
   mHandObjectState->setPositionType( SPACE_COMPLETE );
   mHandObjectState->setRefTran(mObject->getTran());
   mHandObjectState->reset();
+  mHandObjectState->getPosition()->setTran( mHand->getTran() );
 
-  mSampling = new CanonSampling( mHand );
-
+  mSASampling = new SASampling( mHand );
+  mUniSampling = new UniSampling( mHand );
 }
 
 

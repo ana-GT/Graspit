@@ -110,7 +110,7 @@ void PositionStateComplete::createVariables()
 	mVariables.push_back( new SearchVariable("Tx",-250,250,100) );
 	mVariables.push_back( new SearchVariable("Ty",-250,250,100) );
 	mVariables.push_back( new SearchVariable("Tz",-250,250,100) );
-	mVariables.push_back( new SearchVariable("Qw",-1, 1, 0.2) ); // I changed this
+	mVariables.push_back( new SearchVariable("Qw",-5, 5, 1) ); // I changed this
 	mVariables.push_back( new SearchVariable("Qx",-5, 5, 1) );
 	mVariables.push_back( new SearchVariable("Qy",-5, 5, 1) );
 	mVariables.push_back( new SearchVariable("Qz",-5, 5, 1) );

@@ -14,7 +14,8 @@ class World;
 class GraspPlanningState;
 class GraspableBody;
 class Hand;
-class CanonSampling;
+class SASampling;
+class UniSampling;
 
 /**
  * @class SamplingDlg
@@ -34,7 +35,8 @@ class  SamplingDlg : public QDialog,
   Hand *mHand;
   int mDisplayState;
 
-  CanonSampling *mSampling;
+  SASampling *mSASampling;
+  UniSampling *mUniSampling;
 
   void init();
   void destroy();
@@ -53,10 +55,11 @@ class  SamplingDlg : public QDialog,
   public slots:  
   void exitButton_clicked();
   void sampleSAButton_clicked();
+  void sampleUniButton_clicked();
+
   void sampleSASpinBox_valueChanged(int);
-  void samplingStart_clicked();
-  void baseBox_valueChanged(int);
-  void sampleBox_valueChanged(int);
+  void sampleUniSpinBox_valueChanged(int);
+
   void setMembers( Hand *_h, GraspableBody *_b );
 
 };
