@@ -89,7 +89,7 @@ protected:
 
 	//! This is where the decision is made of which type of energy value should be computed and returned
 	double energy() const;
-	//! Checks if the current state is legal or not (usually legal means no interpenetrations)
+	//! Checks if the current state is legal or not (usually legal means no inter-penetrations)
 	bool legal() const;
 
 	//! Used only by compliant energy to keep track of its internal state
@@ -127,7 +127,7 @@ public:
 };
 
 /*! This class is meant to be used with the GuidedPlanner that looks for force-closure. It adds one main thing:
-	- can use a list of "avoid states", so that a new state is deemed illegal if it is in the vicintiy of one of these	
+	- can use a list of "avoid states", so that a new state is deemed illegal if it is in the vicinity of one of these
 */
 class ClosureSearchEnergy : public SearchEnergy
 {

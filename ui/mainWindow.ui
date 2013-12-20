@@ -509,6 +509,7 @@
      <string>Canonical</string>
     </property>
     <addaction name="canonicalPlannerAction"/>
+    <addaction name="samplingAction"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="elementMenu"/>
@@ -1077,6 +1078,11 @@
   <action name="canonicalPlannerAction">
    <property name="text">
     <string>Canonical Planner</string>
+   </property>
+  </action>
+  <action name="samplingAction">
+   <property name="text">
+    <string>Sampling</string>
    </property>
   </action>
   <actiongroup name="elementGroup">

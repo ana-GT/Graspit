@@ -412,7 +412,7 @@ void HandObjectState::saveCurrentHandState()
 	delete [] dof;
 }
 
-/*! If the \a sticky flag is true, it will attempt to maintatin the same 
+/*! If the \a sticky flag is true, it will attempt to maintain the same
 	state in the new parameterization. Otherwise the new parameterization 
 	will just be reset. The \s sticky flag does not work for any conversion
 	between two parameterization types.
@@ -434,7 +434,7 @@ void HandObjectState::setPositionType(StateType type, bool sticky)
 	}
 }
 
-/*! If the \a sticky flag is true, it will attempt to maintatin the same 
+/*! If the \a sticky flag is true, it will attempt to maintain the same
 	state in the new parameterization. Otherwise the new parameterization 
 	will just be reset. The \s sticky flag does not work for any conversion
 	between two parameterization types.

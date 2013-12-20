@@ -61,22 +61,30 @@ void EigenGraspPlannerDlg::exitButton_clicked()
  QDialog::accept();
 }
 
+/**
+ * @function init
+ * @brief Initialize interface
+ */
 void EigenGraspPlannerDlg::init()
 { 
+
+ // Energy box: Set type of energy measurement
  energyBox->insertItem("Hand Contacts");
  energyBox->insertItem("Potential Quality");
  energyBox->insertItem("Contacts AND Quality");
  energyBox->insertItem("Autograsp Quality");
  energyBox->insertItem("Guided Autograsp");
- energyBox->setCurrentItem(0);
+ energyBox->setCurrentItem(0); // Default: Hand contacts
 
+ // Type of planner to be used
  plannerTypeBox->insertItem("Sim. Ann.");
  plannerTypeBox->insertItem("Loop");
  plannerTypeBox->insertItem("Multi-Threaded");
  plannerTypeBox->insertItem("Online");
  plannerTypeBox->insertItem("Time Test");
- plannerTypeBox->setCurrentItem(0);
+ plannerTypeBox->setCurrentItem(0); // Default: Simulated Annealing
  
+ // Buttons initial state
  plannerInitButton->setEnabled(TRUE);
  plannerResetButton->setEnabled(FALSE);
  plannerStartButton->setEnabled(FALSE);
@@ -85,18 +93,21 @@ void EigenGraspPlannerDlg::init()
  useVirtualHandBox->setChecked(true);
  onlineDetailsGroup->setEnabled(FALSE);
 
+ // Steps for simulated annealing: No more than 500 000. Default: 70 000
  QString n;
  QIntValidator* vAnnSteps = new QIntValidator(1,500000,this);
  annStepsEdit->setValidator(vAnnSteps);
  n.setNum(70000);
  annStepsEdit->setText(n);
 
+ // Space search: Default Axis angle
  spaceSearchBox->insertItem("Complete");
  spaceSearchBox->insertItem("Axis-angle");
  spaceSearchBox->insertItem("Ellipsoid");
  spaceSearchBox->insertItem("Approach");
- spaceSearchBox->setCurrentItem(1);
+ spaceSearchBox->setCurrentItem(1); // Default: Axis-Angle
 
+ // Grasp visualization: Only available after planning has taken place
  prevGraspButton->setEnabled(FALSE);
  nextGraspButton->setEnabled(FALSE);
  bestGraspButton->setEnabled(FALSE);
@@ -118,11 +129,14 @@ void EigenGraspPlannerDlg::init()
  inputGloveBox->setEnabled(FALSE);
  inputLoadButton->setEnabled(FALSE);
 
- fprintf(stderr,"INIT DONE \n");
 }
 
-void EigenGraspPlannerDlg::destroy()
-{
+/**
+ * @function destroy
+ * @brief Takes care of closing / destroying stuff once window is closed
+ */
+void EigenGraspPlannerDlg::destroy() {
+
  delete mHandObjectState;
  if (mPlanner) delete mPlanner;
 
@@ -151,32 +165,42 @@ void EigenGraspPlannerDlg::destroy()
  varLayouts.clear();
 }
 
-void EigenGraspPlannerDlg::setMembers( Hand *h, GraspableBody *b )
-{
- mPlanner = NULL;
- mHand = h;
- mObject = b;
- mHand->getGrasp()->setObjectNoUpdate(mObject);
-// mHand->getGrasp()->setGravity(true);
- mHand->getGrasp()->setGravity(false);
+/**
+ * @function setMembers
+ * @brief Initialize abstract egPlanner when its window option is selected
+ */
+void EigenGraspPlannerDlg::setMembers( Hand *h,
+											GraspableBody *b ) {
 
- mHandObjectState = new GraspPlanningState(mHand);
- mHandObjectState->setObject(mObject);
- mHandObjectState->setPositionType(SPACE_AXIS_ANGLE);
- mHandObjectState->setRefTran(mObject->getTran());
- mHandObjectState->reset();
- setVariableLayout();
+	mPlanner = NULL;
+	mHand = h;
+	mObject = b;
+	mHand->getGrasp()->setObjectNoUpdate(mObject);
+	// mHand->getGrasp()->setGravity(true);
+	mHand->getGrasp()->setGravity(false);
 
- if (mHand->getNumVirtualContacts() > 0) {
-	 setContactsBox->setChecked(TRUE);
- }
+	// Create hand object state to store...original configuration?
+	mHandObjectState = new GraspPlanningState(mHand);
+	mHandObjectState->setObject(mObject);
+	mHandObjectState->setPositionType(SPACE_AXIS_ANGLE);
+	mHandObjectState->setRefTran(mObject->getTran());
+	mHandObjectState->reset();
+	setVariableLayout();
 
- updateVariableLayout();
- updateInputLayout();
+	if (mHand->getNumVirtualContacts() > 0) {
+		setContactsBox->setChecked(TRUE);
+	}
+
+	updateVariableLayout();
+	updateInputLayout();
 }
 
 // ----------------------------------- Search State and variable layout management -------------------------------
 
+/**
+ * @function setVariableLayout
+ * @brief Set variable check boxes according to the handObject state configuration
+ */
 void EigenGraspPlannerDlg::setVariableLayout()
 {
  //cleanup
@@ -228,6 +252,10 @@ void EigenGraspPlannerDlg::setVariableLayout()
  }
 }
 
+/**
+ * @function updateVariableLayout
+ * @brief Update with date from handObject state
+ */
 void EigenGraspPlannerDlg::updateVariableLayout()
 {
 	int i;
@@ -247,8 +275,12 @@ void EigenGraspPlannerDlg::updateVariableLayout()
  }
 }
 
-void EigenGraspPlannerDlg::updateInputLayout()
-{
+/**
+ * @function updateInputLayout
+ * @brief Still unsure what this does, but it is related with the CyberGlove
+ */
+void EigenGraspPlannerDlg::updateInputLayout() {
+
 	int i;
  for (i=0; i<mHandObjectState->getNumVariables(); i++) {
    if ( !mPlanner || !(mPlanner->isReady() || mPlanner->isActive()) ) {
@@ -287,8 +319,12 @@ void EigenGraspPlannerDlg::updateInputLayout()
  }
 }
 
-void EigenGraspPlannerDlg::variableInputChanged()
-{
+/**
+ * @function variableInputChanged
+ * @brief Something was changed in the variable box for input
+ */
+void EigenGraspPlannerDlg::variableInputChanged() {
+
 	assert(mPlanner);
 	GraspPlanningState *t = mPlanner->getTargetState();
 	assert(t);
@@ -310,16 +346,26 @@ void EigenGraspPlannerDlg::variableInputChanged()
 	}
 }
 
-void EigenGraspPlannerDlg::variableCheckBoxChanged()
-{
+/**
+ * @function variableCheckBoxChanged
+ * @brief Check if some of the variable parameters is active / inactive and set it to fixed/non-fixed respectively
+ */
+void EigenGraspPlannerDlg::variableCheckBoxChanged() {
+
  for (int i=0; i<mHandObjectState->getNumVariables(); i++) {
   if (varCheck[i]->isChecked()) mHandObjectState->getVariable(i)->setFixed(false);
   else mHandObjectState->getVariable(i)->setFixed(true);
  }
  //force a reset of the planner
  plannerStartButton->setEnabled(FALSE);
+
 }
 
+
+/**
+ * @function spaceSearchBox_activated
+ * @brief Set planner type of search state
+ */
 void EigenGraspPlannerDlg::spaceSearchBox_activated( const QString &s )
 {
  if ( s==QString("Complete") ) {
@@ -346,21 +392,30 @@ void EigenGraspPlannerDlg::spaceSearchBox_activated( const QString &s )
 
 //------------------------------------- Show Results stuff ---------------------------------
 
-void EigenGraspPlannerDlg::prevGraspButton_clicked()
-{
+/**
+ * @function prevGraspButton_clicked
+ * @brief Shows previous grasp in the BestGrasp list of mPlanner
+ */
+void EigenGraspPlannerDlg::prevGraspButton_clicked() {
  mDisplayState--;
  updateResults(true);
 }
 
-void EigenGraspPlannerDlg::bestGraspButton_clicked()
-{
+/**
+ * @function bestGraspButton_clicked
+ * @brief Shows the best grasp in the BestGrasp list of mPlanner
+ */
+void EigenGraspPlannerDlg::bestGraspButton_clicked() {
  if (!mPlanner) return;
  mDisplayState = 0;
  updateResults(true);
 }
 
-void EigenGraspPlannerDlg::nextGraspButton_clicked()
-{
+/**
+ * @function nextGraspButton_clicked
+ * @brief Shows the next grasp in the BestGrasp list
+ */
+void EigenGraspPlannerDlg::nextGraspButton_clicked() {
  mDisplayState++;
  updateResults(true);
 }
@@ -376,65 +431,58 @@ void EigenGraspPlannerDlg::plannerUpdate()
  }
 }
 
-void EigenGraspPlannerDlg::updateResults(bool render)
-{
- assert(mPlanner);
-
- QString nStr;
- nStr.setNum(mPlanner->getCurrentStep());
- currentStepLabel->setText(QString("Current step: ") + nStr);
-
- nStr.setNum(mPlanner->getRunningTime(),'f',0);
- timeLabel->setText(QString("Time used: ") + nStr + QString(" sec."));
-
- int d = mPlanner->getListSize();
- int rank, size, iteration; double energy;
-
- if (d==0) {
-  mDisplayState = rank = size = energy = iteration = 0; render = false;
- } else if (mDisplayState < 0){
-  mDisplayState = 0;
- } else if ( mDisplayState >= d) {
-  mDisplayState = d-1;
- } 
- 
- if ( d!=0 ){
-  const GraspPlanningState *s = mPlanner->getGrasp( mDisplayState);
-  rank = mDisplayState+1;
-  size = d;
-  iteration = s->getItNumber();
-  energy = s->getEnergy();
- }
-
- /*
- FILE *f = fopen("foo.txt","w");
- for (int i=0; i<mPlanner->getListSize(); i++) {
-	 for(int j=i+1; j<mPlanner->getListSize(); j++) {
-		 float d = mPlanner->getGrasp(i)->distance( mPlanner->getGrasp(j) );
-		 fprintf(stderr,"%d -- %d: %f\n",i+1,j+1,d);
-	 }
-	 fprintf(stderr,"\n");
-	 mPlanner->getGrasp(i)->writeToFile(f);
- }
- fclose(f);
+/**
+ * @function updateResults
+ * @brief Update based on any change detected in the interface
  */
+void EigenGraspPlannerDlg::updateResults(bool render) {
 
- QString n1,n2;
- n1.setNum(rank);
- n2.setNum(size);
- rankLabel->setText("Rank: " + n1 + "/" + n2);
- n1.setNum(iteration);
- iterationLabel->setText("Iteration: " + n1);
- n1.setNum(energy,'f',3);
- energyLabel->setText("Energy: " + n1);
+	// To update, a mPlanner must exist
+	assert(mPlanner);
 
- if (render) {
-  mPlanner->showGrasp(mDisplayState);
-  //mHand->getWorld()->findAllContacts();
-  //mHand->getGrasp()->update();
-  mPlanner->getGrasp(mDisplayState)->printState();
-  //mHand->autoGrasp(true);
- }
+	QString nStr;
+	nStr.setNum(mPlanner->getCurrentStep());
+	currentStepLabel->setText(QString("Current step: ") + nStr);
+
+	nStr.setNum(mPlanner->getRunningTime(),'f',0);
+	timeLabel->setText(QString("Time used: ") + nStr + QString(" sec."));
+
+	int d = mPlanner->getListSize();
+	int rank, size, iteration; double energy;
+
+	if (d==0) {
+		mDisplayState = rank = size = energy = iteration = 0; render = false;
+	} else if (mDisplayState < 0){
+		mDisplayState = 0;
+	} else if ( mDisplayState >= d) {
+		mDisplayState = d-1;
+	}
+ 
+	if ( d!=0 ){
+		const GraspPlanningState *s = mPlanner->getGrasp( mDisplayState);
+		rank = mDisplayState+1;
+		size = d;
+		iteration = s->getItNumber();
+		energy = s->getEnergy();
+	}
+
+
+	QString n1,n2;
+	n1.setNum(rank);
+	n2.setNum(size);
+	rankLabel->setText("Rank: " + n1 + "/" + n2);
+	n1.setNum(iteration);
+	iterationLabel->setText("Iteration: " + n1);
+	n1.setNum(energy,'f',3);
+	energyLabel->setText("Energy: " + n1);
+
+	if (render) {
+		mPlanner->showGrasp(mDisplayState);
+		//mHand->getWorld()->findAllContacts();
+		//mHand->getGrasp()->update();
+		mPlanner->getGrasp(mDisplayState)->printState();
+		//mHand->autoGrasp(true);
+	}
 }
 
 // ----------------------------- Settings management ---------------------------

@@ -49,19 +49,23 @@ PROF_DECLARE(EG_PLANNER);
 
 #define BEST_LIST_SIZE 20
 
-EGPlanner::EGPlanner(Hand *h)
-{
+/**
+ * @function EGPlanner
+ * @brief Constructor
+ */
+EGPlanner::EGPlanner(Hand *h) {
+
 	mHand = h;
 	init();
 	mEnergyCalculator = new SearchEnergy();
 }
 
-/*! Also sets the state of the planner to INIT, which is default
-	initialization.
-*/
-void
-EGPlanner::init()
-{	
+/**
+ * @function init
+ * @brief Also sets the state of the planner to INIT, which is default initialization.
+ */
+void EGPlanner::init() {
+
 	mProfileInstance = new Profiling::ProfileInstance();
 
 	mIdleSensor = NULL;
@@ -81,9 +85,13 @@ EGPlanner::init()
 	mOut = NULL;
 }
 
-EGPlanner::~EGPlanner()
-{
-        delete mProfileInstance;
+/**
+ * @function ~EGPlanner
+ * @brief Destructor
+ */
+EGPlanner::~EGPlanner() {
+
+    delete mProfileInstance;
 	clearSolutions();
 	if (mEnergyCalculator) delete mEnergyCalculator;
 	if (mUsesClone) {
@@ -100,9 +108,8 @@ EGPlanner::~EGPlanner()
 	DONE is essentially just a flag that is guaranteed to stop the 
 	thread. There's no going back...
 */
-void
-EGPlanner::setState(PlannerState s)
-{
+void EGPlanner::setState(PlannerState s) {
+
 	if (mMultiThread) mControlMutex.lock();
 	if (mState == DONE && s != DONE && s != EXITED) {
 		DBGA("Planner is DONE; change state no longer possible");
@@ -114,9 +121,12 @@ EGPlanner::setState(PlannerState s)
 	if (mMultiThread) mControlMutex.unlock();
 }
 
-PlannerState
-EGPlanner::getState()
-{
+/**
+ * @function getState
+ * @brief Get current status of the planner
+ */
+PlannerState EGPlanner::getState() {
+
 	if (mMultiThread) mControlMutex.lock();
 	PlannerState s = mState;
 	if (mMultiThread) mControlMutex.unlock();
@@ -127,9 +137,7 @@ EGPlanner::getState()
 	the planner is running to cause it to start from the beginning,
 	without affecting the currently computed solutions.
 */
-void
-EGPlanner::resetParameters()
-{
+void EGPlanner::resetParameters() {
 	mCurrentStep = 0;
 	mRenderCount = 0;
 }
@@ -141,12 +149,10 @@ EGPlanner::resetParameters()
 	It will clear any solutions saved so far and re-start the timer and the 
 	step count as well. It can not be used while the planner is running, you 
 	must pause the planner first. This function will also move the planner 
-	from INIT to READY as long as all the necessary conditions for initilized() 
+	from INIT to READY as long as all the necessary conditions for initialized()
 	have been met.
 */
-bool
-EGPlanner::resetPlanner()
-{
+bool EGPlanner::resetPlanner() {
 	if ( getState() == RUNNING || getState() == DONE) {
 		DBGA("Planner is either running or dead; cannot reset");
 		return false;
@@ -165,9 +171,12 @@ EGPlanner::resetPlanner()
 	return true;
 }
 
-bool
-EGPlanner::checkTerminationConditions()
-{
+/**
+ * @function checkTerminationConditions
+ * @brief Check if planner should finish (max Steps /time reached) or if it is already finished
+ */
+bool EGPlanner::checkTerminationConditions() {
+
 	if (!isActive()) return true;
 	bool termination = false;
 	//max steps equal to -1 means run forever
@@ -195,9 +204,12 @@ EGPlanner::checkTerminationConditions()
 	return termination;
 }
 
-void
-EGPlanner::createAndUseClone()
-{
+/**
+ * @function createAndUseClone
+ * @brief
+ */
+void EGPlanner::createAndUseClone() {
+
   if (isActive()) {
     DBGA("Can not change hands while planner is running");
     return;
@@ -239,9 +251,7 @@ EGPlanner::createAndUseClone()
 	multi-threaded operation, since Inventor is not thread-safe. The 
 	clone should be rendered just for debug purposes.
 */
-void
-EGPlanner::showClone(bool s)
-{
+void EGPlanner::showClone(bool s) {
 	if (!mUsesClone) {
 		DBGA("Planner is not using a clone");
 		return;
@@ -253,28 +263,36 @@ EGPlanner::showClone(bool s)
 	}
 }
 
-void
-EGPlanner::setEnergyType(SearchEnergyType s)
-{
+/**
+ * @function setEnergyType
+ * @brief As the name says, sets the type of energy function to be used for metrics evaluation
+ */
+void EGPlanner::setEnergyType(SearchEnergyType s) {
 	assert (mEnergyCalculator);
 	mEnergyCalculator->setType(s);
 }
 
-void
-EGPlanner::setContactType(SearchContactType c)
-{
+/**
+ * @function setContactType
+ * @brief
+ */
+void EGPlanner::setContactType(SearchContactType c) {
 	assert (mEnergyCalculator);
 	mEnergyCalculator->setContactType(c);
 }
 
-void
-EGPlanner::sensorCB(void *data, SoSensor *)
-{
+/**
+ * @function sensorCB
+ * @brief Callback for IDLE Sensor, executed while leaving the interface able to work
+ */
+void EGPlanner::sensorCB(void *data, SoSensor *) {
+
 	EGPlanner *planner = (EGPlanner*)data;
 	if (planner->checkTerminationConditions()) {
 		//if the planner has stopped we are done
 		return;
 	}
+	// If planner is still running, do one more iteration and schedule next callback
 	planner->mainLoop();
 	planner->mIdleSensor->schedule();
 }
@@ -308,16 +326,19 @@ void EGPlanner::threadLoop()
 	DBGP("Thread is done!");
 }
 
-
-double
-EGPlanner::getRunningTime()
-{
+/**
+ * @function getRunningTime
+ * @brief How much time has passed since planner started working
+ */
+double EGPlanner::getRunningTime() {
   return 1.0e-6 * mProfileInstance->getTotalTimeMicroseconds();
 }
 
-void
-EGPlanner::run()
-{
+/**
+ * @function run
+ * @brief Apparently, this function is only used for multiThread. Single thread uses mainLoop
+ */
+void EGPlanner::run() {
 	mMultiThread = true;
 	mRenderType = RENDER_NEVER;
 	//threaded planners always use cloned hands
@@ -332,9 +353,7 @@ EGPlanner::run()
 	just spins. Use startPlanner(), like you would for single-threaded
 	operation, for that.
 */
-void
-EGPlanner::startThread()
-{
+void EGPlanner::startThread() {
 	if (mMultiThread) {
 		DBGA("Can not start thread; already multi-threaded");
 	}
@@ -352,9 +371,11 @@ EGPlanner::startThread()
 	mHand->getWorld()->addElementToSceneGraph(mHand);	
 }
 
-void
-EGPlanner::startPlanner()
-{
+/**
+ * @function startPlanner
+ * @brief Starts mIdleSensor for single-thread case
+ */
+void EGPlanner::startPlanner() {
 	if ( getState() != READY ) {
 		DBGA("Planner not ready to start!");
 		return;
@@ -376,9 +397,8 @@ EGPlanner::startPlanner()
 	This differentiation is needed mainly for the multi-threaded case: 
 	this function stops the planner's thread.
 */
-void
-EGPlanner::stopPlanner()
-{
+void EGPlanner::stopPlanner() {
+
 	if (getState()==DONE || getState()==EXITED) return;
 	//this will stop the planner REGARDLESS of what state it is in!
 	pausePlanner();
@@ -392,9 +412,11 @@ EGPlanner::stopPlanner()
 	}
 }
 
-void
-EGPlanner::pausePlanner()
-{
+/**
+ * @function pausePlanner
+ * @brief For single-threaded, it will stop the mIdleSensor, hence stopping the running of iterations
+ */
+void EGPlanner::pausePlanner() {
 	if (getState() != RUNNING) return;
 	mProfileInstance->stopTimer();
 	if (!mMultiThread) {
@@ -408,9 +430,12 @@ EGPlanner::pausePlanner()
 	if (!mMultiThread) emit complete();
 }
 
-void
-EGPlanner::render()
-{
+/**
+ * @function render
+ * @brief Render current state / best state, depending on settings. Do not render on multi-thread
+ */
+void EGPlanner::render() {
+
 	if (mMultiThread) {
 		//for now, multi-threaded planners are not allowed to render
 		//rendering should only be done by the main thread
@@ -434,9 +459,11 @@ EGPlanner::render()
 	}
 }
 
-const GraspPlanningState* 
-EGPlanner::getGrasp(int i)
-{
+/**
+ * @function getGrasp
+ * @brief Returns a member of the mBestList of grasps
+ */
+const GraspPlanningState* EGPlanner::getGrasp(int i) {
 	assert (i>=0 && i<(int)mBestList.size());
 	std::list<GraspPlanningState*>::iterator it = mBestList.begin();
 	for (int k=0; k<i; k++) {
@@ -445,9 +472,11 @@ EGPlanner::getGrasp(int i)
 	return (*it);
 }
 
-void 
-EGPlanner::showGrasp(int i)
-{
+/**
+ * @function showGrasp
+ * @brief Show, well, the grasp of the mBestList
+ */
+void EGPlanner::showGrasp(int i) {
 	assert (i>=0 && i<getListSize());
 	const GraspPlanningState *s = getGrasp(i);
 	s->execute();
@@ -456,9 +485,12 @@ EGPlanner::showGrasp(int i)
 	DBGA("Re-computed energy: " << e);
 }
 
-void
-EGPlanner::clearSolutions()
-{
+/**
+ * @function clearSolutions
+ * @brief Erase all solutions in mBestList so far
+ */
+void EGPlanner::clearSolutions() {
+
 	while ( !mBestList.empty() ) {
 		delete(mBestList.back());
 		mBestList.pop_back();
@@ -504,8 +536,8 @@ EGPlanner::processInput()
 	return true;
 }
 
-double
-EGPlanner::stateDistance(const GraspPlanningState *s1, const GraspPlanningState *s2) {
+double EGPlanner::stateDistance( const GraspPlanningState *s1,
+									 const GraspPlanningState *s2) {
 	return s1->distance(s2);
 }
 
@@ -513,13 +545,14 @@ EGPlanner::stateDistance(const GraspPlanningState *s1, const GraspPlanningState 
 	a new state is added to the list, we check if any of the states that 
 	are already in the list are within a given distance of the new state.
 	If so, the best one is kept and the other one is thrown away. This 
-	method does not gurantee unique states, but	it comes close and runs 
+	method does not guarantee unique states, but it comes close and runs
 	in linear time for each addition, rather than square time for 
 	maintenance.
 */
-bool
-EGPlanner::addToListOfUniqueSolutions(GraspPlanningState *s, std::list<GraspPlanningState*> *list, double distance)
-{
+bool EGPlanner::addToListOfUniqueSolutions( GraspPlanningState *s,
+												  std::list<GraspPlanningState*> *list,
+												  double distance ) {
+
 	std::list<GraspPlanningState*>::iterator it;
 	it = list->begin();
 	bool add = true;

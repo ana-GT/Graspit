@@ -159,4 +159,5 @@ public slots:
 	void forcesVisibleCheckBox_toggled( bool vis);
 
 	void canonicalPlannerActivated();
+	void samplingActivated();
 };

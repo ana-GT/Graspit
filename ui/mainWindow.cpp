@@ -93,6 +93,7 @@
 
 // Taxonomy
 #include "canonicalPlannerDlg.h"
+#include "samplingDlg.h"
 
 //------------------------------------ CONSTRUCTOR AND DESTRUCTOR -------------------------------------
 
@@ -182,6 +183,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   // -- Canonical planner menu
   QObject::connect( mUI->canonicalPlannerAction, SIGNAL(triggered()), this, SLOT(canonicalPlannerActivated()) );
+  QObject::connect( mUI->samplingAction, SIGNAL(triggered()), this, SLOT(samplingActivated()) );
 
 }
 
@@ -1400,4 +1402,29 @@ void MainWindow::canonicalPlannerActivated() {
 
   dlg->show();
 
+}
+
+/**
+ * @function samplingActivated
+ */
+void MainWindow::samplingActivated() {
+
+	// We need a hand to sample position
+	assert( world->getCurrentHand() );
+
+	int gb = mUI->graspedBodyBox->currentItem();
+	if( gb < 0 || world->getNumGB() < gb + 1 ) {
+		fprintf( stderr, "No object selected \n" );
+		return;
+	}
+
+	SamplingDlg *dlg = new SamplingDlg( mWindow );
+
+	dlg->setMembers( world->getCurrentHand(),
+					 world->getGB(gb) );
+
+	dlg->setAttribute( Qt::WA_ShowModal, false );
+	dlg->setAttribute( Qt::WA_DeleteOnClose, true );
+
+	dlg->show();
 }

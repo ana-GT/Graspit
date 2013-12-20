@@ -26,7 +26,7 @@
 #include "EGPlanner/searchState.h"
 
 #include "simAnnPlanner.h"
-#include "EGPlanner/canonPlanner.h"
+#include "canonPlanner/canonPlanner.h"
 
 
 /**

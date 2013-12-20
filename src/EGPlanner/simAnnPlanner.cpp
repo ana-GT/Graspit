@@ -37,8 +37,11 @@
 //! Two states within this distance of each other are considered to be in the same neighborhood
 #define DISTANCE_THRESHOLD 0.3
 
-SimAnnPlanner::SimAnnPlanner(Hand *h)
-{
+/**
+ * @function SimAnnPlanner
+ * @brief Constructor
+ */
+SimAnnPlanner::SimAnnPlanner( Hand *h ) {
 	mHand = h;
 	init();
 	mEnergyCalculator = new SearchEnergy();
@@ -46,13 +49,19 @@ SimAnnPlanner::SimAnnPlanner(Hand *h)
 	//mSimAnn->writeResults(true);
 }
 
-SimAnnPlanner::~SimAnnPlanner()
-{
+/**
+ * @function ~SimAnnPlanner
+ * @brief Destructor
+ */
+SimAnnPlanner::~SimAnnPlanner(){
 	if (mSimAnn) delete mSimAnn;
 }
 
-void
-SimAnnPlanner::setAnnealingParameters(AnnealingType y) {
+/**
+ * @function setAnnealingParameters
+ * @brief Set parameters for the annealing search
+ */
+void SimAnnPlanner::setAnnealingParameters(AnnealingType y) {
 	if (isActive()) {
 		DBGA("Stop planner before setting ann parameters");
 		return;
@@ -60,25 +69,31 @@ SimAnnPlanner::setAnnealingParameters(AnnealingType y) {
 	mSimAnn->setParameters(y);
 }
 
-void
-SimAnnPlanner::resetParameters()
-{
+/**
+ * @function resetParameters
+ * @brief Set current step to zero and reset the simulated annealing search
+ */
+void SimAnnPlanner::resetParameters() {
 	EGPlanner::resetParameters();
 	mSimAnn->reset();
 	mCurrentStep = mSimAnn->getCurrentStep();
 	mCurrentState->setEnergy(1.0e8);
 }
 
-bool
-SimAnnPlanner::initialized()
-{
+/**
+ * @function initialized
+ * @brief True if there is an initial state set, false otherwise
+ */
+bool SimAnnPlanner::initialized() {
 	if (!mCurrentState) return false;
 	return true;
 }
 
-void
-SimAnnPlanner::setModelState(const GraspPlanningState *modelState)
-{
+/**
+ * @function setModelState
+ * @brief Set current state and some other things that I don't get just yet
+ */
+void SimAnnPlanner::setModelState(const GraspPlanningState *modelState) {
 	if (isActive()) {
 		DBGA("Can not change model state while planner is running");
 		return;
@@ -102,9 +117,11 @@ SimAnnPlanner::setModelState(const GraspPlanningState *modelState)
 	invalidateReset();
 }
 
-void
-SimAnnPlanner::mainLoop()
-{
+/**
+ * @function mainLoop
+ * @brief Iterate function for single-thread
+ */
+void SimAnnPlanner::mainLoop() {
 	GraspPlanningState *input = NULL;
 	if ( processInput() ) {
 		input = mTargetState;
@@ -114,11 +131,9 @@ SimAnnPlanner::mainLoop()
 	SimAnn::Result result = mSimAnn->iterate(mCurrentState, mEnergyCalculator, input);
 	if ( result == SimAnn::FAIL) {
 		DBGP("Sim ann failed");
-		printf("Sim ann failed \n");
 		return;
 	}
 	DBGP("Sim Ann success");
-	printf("Sim Ann success \n");
 
 	//put result in list if there's room or it's better than the worst solution so far
 	double worstEnergy;

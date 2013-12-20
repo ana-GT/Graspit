@@ -41,7 +41,7 @@ class SoSensor;
 /*!	This class performs simulated annealing on a collection of variables 
 	(a GraspPlanningState*). It has no idea of grasps, hands, etc. The cooling 
 	schedule is inspired from L. Ingber, "Very Fast Simulated Re-Annealing", 
-	J. Mathl. Comput. Modelling, vol. 12, no. 8, pp. 967–973, December 1989.
+	J. Mathl. Comput. Modelling, vol. 12, no. 8, pp. 967ï¿½973, December 1989.
 */
 class SimAnn : public QObject
 {
@@ -71,7 +71,7 @@ private:
 	double NBR_ADJ; 
 	//! Adjust raw errors reported by states to be in the relevant range of the annealing schedule	
 	double ERR_ADJ; 
-	//! Starting temperatue
+	//! Starting temperature
 	double DEF_T0; 
 	//! Starting step
 	double DEF_K0; 
@@ -91,7 +91,8 @@ private:
 	double prob(double e_old, double e_new, double t);
 	double cooling(double t0, double c, int k, int d);
 	//! Computes a neighbor of a given HandObjectState
-	GraspPlanningState* stateNeighbor(GraspPlanningState *s, double T, GraspPlanningState *t = NULL);
+	// Ana's change: Put this as public to test in sampling
+	//GraspPlanningState* stateNeighbor(GraspPlanningState *s, double T, GraspPlanningState *t = NULL);
 	//! Computes the neighbor of one individual variable
 	void variableNeighbor(VariableSet *set, double T, VariableSet *target = NULL);
 	double neighborDistribution(double T);
@@ -105,7 +106,7 @@ public:
 
 	//! The main interface to this class. Performs one annealing step
 	Result iterate(GraspPlanningState *currentState, SearchEnergy *energyCalculator, GraspPlanningState *targetState = NULL);
-
+	GraspPlanningState* stateNeighbor(GraspPlanningState *s, double T, GraspPlanningState *t = NULL);
 	void reset();
 	int getCurrentStep(){return mCurrentStep;}
 	void setParameters(AnnealingType type);

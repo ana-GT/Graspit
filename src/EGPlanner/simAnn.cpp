@@ -180,7 +180,7 @@ SimAnn::iterate(GraspPlanningState *currentState, SearchEnergy *energyCalculator
 	if (!legal) {
 		DBGP("Failed to compute a legal neighbor");
 		//we have failed to compute a legal neighbor. 
-		//weather the SimAnn should advance a step and cool down the temperature even when it fails to compute a 
+		//whether the SimAnn should advance a step and cool down the temperature even when it fails to compute a
 		//legal neighbor is debatable. Might be more interactive (especially for the online planner) if it does.
 		//mCurrentStep += 1;
 		return FAIL;
@@ -244,7 +244,7 @@ SimAnn::variableNeighbor(VariableSet *set, double T, VariableSet *target)
 	for (int i=0; i<set->getNumVariables(); i++) {
 		var = set->getVariable(i);
 		if ( var->isFixed() ) continue;
-		v = var->mMaxVal + 1.0; //start off ilegal
+		v = var->mMaxVal + 1.0; //start off illegal
 		int loop = 0;
 		while ( v>var->mMaxVal || v < var->mMinVal ) {
 			loop++;

@@ -50,7 +50,8 @@ include_directories(   src
   include 
   include/math 
   include/Planner 
-  include/EGPlanner  
+  include/EGPlanner
+  include/canonPlanner  
   ui 
   ui/Planner 
   ui/EGPlanner
@@ -138,7 +139,8 @@ set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
   include/worldElement.h
   include/world.h
   include/EGPlanner/egPlanner.h
-  include/EGPlanner/canonPlanner.h
+  include/canonPlanner/canonPlanner.h
+  include/canonPlanner/sampling.h
   include/EGPlanner/guidedPlanner.h 
   include/EGPlanner/loopPlanner.h
   include/EGPlanner/searchEnergy.h
@@ -221,7 +223,8 @@ set( graspIt_sources ${graspIt_sources}
   src/EGPlanner/graspTesterThread.cpp 
   src/EGPlanner/onLineGraspInterface.cpp 
   src/EGPlanner/listPlanner.cpp
-  src/EGPlanner/canonPlanner.cpp )
+  src/canonPlanner/canonPlanner.cpp
+  src/canonPlanner/sampling.cpp )
 
 
 #***************************************
@@ -273,7 +276,8 @@ set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
   ui/EGPlanner/compliantPlannerDlg.h
   ui/EGPlanner/egPlannerDlg.h 
   ui/Planner/plannerdlg.h
-  ui/CanonicalPlanner/canonicalPlannerDlg.h )  
+  ui/CanonicalPlanner/canonicalPlannerDlg.h
+  ui/CanonicalPlanner/samplingDlg.h )  
 
 # Source files
 set( graspIt_sources ${graspIt_sources}
@@ -292,7 +296,8 @@ set( graspIt_sources ${graspIt_sources}
   ui/Planner/plannerdlg.cpp 
   ui/EGPlanner/egPlannerDlg.cpp 
   ui/EGPlanner/compliantPlannerDlg.cpp
-  ui/CanonicalPlanner/canonicalPlannerDlg.cpp )
+  ui/CanonicalPlanner/canonicalPlannerDlg.cpp
+  ui/CanonicalPlanner/samplingDlg.cpp )
 
 
 # UI files
@@ -314,7 +319,8 @@ set( QT_FORMS ${QT_FORMS}
   ui/Planner/plannerdlg.ui 
   ui/EGPlanner/egPlannerDlg.ui 
   ui/EGPlanner/compliantPlannerDlg.ui
-  ui/CanonicalPlanner/canonicalPlannerDlg.ui )
+  ui/CanonicalPlanner/canonicalPlannerDlg.ui
+  ui/CanonicalPlanner/samplingDlg.ui )
 
 # **********************************
 # Optimizer 
@@ -341,19 +347,25 @@ QT4_ADD_RESOURCES( graspIt_RESOURCES ./src/resources.qrc )
 set_source_files_properties( ${graspIt_RESOURCES} PROPERTIES GENERATED ON ) 
 QT4_WRAP_UI( graspIt_FORMS_HEADERS ${QT_FORMS} ) 
 QT4_WRAP_CPP( graspIt_MOC_HEADERS ${graspIt_OBJECT_HEADERS} )
-MESSAGe( "resources: ${graspIt_RESOURCES}")
+MESSAGE( "resources: ${graspIt_RESOURCES}")
 
 add_executable( graspIt src/main.cpp ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
 target_link_libraries( graspIt ${GraspItExt_LIBRARIES} )
 set_target_properties( graspIt PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
 
-add_executable( tester apps/tester.cpp ${graspIt_headers} ${graspIt_sources} ${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS} ${graspIt_RESOURCES} )  
-target_link_libraries( tester ${GraspItExt_LIBRARIES} )
-set_target_properties( tester PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
-
 add_library( graspIt_basic ${graspIt_headers} ${graspIt_sources} ${graspIt_RESOURCES} )
 target_link_libraries( graspIt_basic ${GraspItExt_LIBRARIES} )
 set_target_properties( graspIt_basic PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib )
+
+# UI files
+set( apps_QT_FORMS apps/ui/samplingApp.ui )
+QT4_WRAP_UI( apps_FORMS_HEADERS ${apps_QT_FORMS} )
+QT4_WRAP_CPP( apps_MOC_HEADERS apps/samplingApp.h )
+
+add_executable( samplingApp apps/samplingMain.cpp apps/samplingApp.cpp ${apps_MOC_HEADERS} ${apps_FORMS_HEADERS} ${graspIt_headers} ${graspIt_sources}
+${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS}  ${graspIt_RESOURCES} )  
+target_link_libraries( samplingApp ${GraspItExt_LIBRARIES} graspIt_basic )
+set_target_properties( samplingApp PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
 
 
 
