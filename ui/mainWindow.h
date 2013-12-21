@@ -160,4 +160,5 @@ public slots:
 
 	void canonicalPlannerActivated();
 	void samplingActivated();
+	void eigenGraspPlusPlannerActivated();
 };

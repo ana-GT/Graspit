@@ -119,7 +119,8 @@ set( graspIt_headers ${graspIt_headers}
   include/EGPlanner/onLineGraspInterface.h 
   include/EGPlanner/listPlanner.h 
   include/FitParabola.h 
-  include/shadow.h )
+  include/shadow.h
+  include/canonPlanner/simAnnPlusPlanner.h )
 
 # MOC Files
 set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
@@ -140,6 +141,8 @@ set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
   include/world.h
   include/EGPlanner/egPlanner.h
   include/canonPlanner/canonPlanner.h
+  include/canonPlanner/simAnnPlusPlanner.h
+  include/canonPlanner/simAnnPlus.h
   include/canonPlanner/SASampling.h
   include/canonPlanner/UniSampling.h
   include/EGPlanner/guidedPlanner.h 
@@ -225,6 +228,8 @@ set( graspIt_sources ${graspIt_sources}
   src/EGPlanner/onLineGraspInterface.cpp 
   src/EGPlanner/listPlanner.cpp
   src/canonPlanner/canonPlanner.cpp
+  src/canonPlanner/simAnnPlusPlanner.cpp
+  src/canonPlanner/simAnnPlus.cpp
   src/canonPlanner/SASampling.cpp
   src/canonPlanner/UniSampling.cpp )
 
@@ -279,6 +284,7 @@ set( graspIt_OBJECT_HEADERS ${graspIt_OBJECT_HEADERS}
   ui/EGPlanner/egPlannerDlg.h 
   ui/Planner/plannerdlg.h
   ui/CanonicalPlanner/canonicalPlannerDlg.h
+  ui/CanonicalPlanner/egPlusPlannerDlg.h
   ui/CanonicalPlanner/samplingDlg.h )  
 
 # Source files
@@ -299,6 +305,7 @@ set( graspIt_sources ${graspIt_sources}
   ui/EGPlanner/egPlannerDlg.cpp 
   ui/EGPlanner/compliantPlannerDlg.cpp
   ui/CanonicalPlanner/canonicalPlannerDlg.cpp
+  ui/CanonicalPlanner/egPlusPlannerDlg.cpp
   ui/CanonicalPlanner/samplingDlg.cpp )
 
 
@@ -321,6 +328,7 @@ set( QT_FORMS ${QT_FORMS}
   ui/Planner/plannerdlg.ui 
   ui/EGPlanner/egPlannerDlg.ui 
   ui/EGPlanner/compliantPlannerDlg.ui
+  ui/CanonicalPlanner/egPlusPlannerDlg.ui
   ui/CanonicalPlanner/canonicalPlannerDlg.ui
   ui/CanonicalPlanner/samplingDlg.ui )
 

@@ -23,11 +23,11 @@
 //
 //######################################################################
 
-#include "simAnnPlanner.h"
+#include "simAnnPlusPlanner.h"
 
 #include "searchState.h"
 #include "searchEnergy.h"
-#include "simAnn.h"
+#include "simAnnPlus.h"
 
 //#define GRASPITDBG
 #include "debug.h"
@@ -38,45 +38,45 @@
 #define DISTANCE_THRESHOLD 0.3
 
 /**
- * @function SimAnnPlanner
+ * @function SimAnnPlusPlanner
  * @brief Constructor
  */
-SimAnnPlanner::SimAnnPlanner( Hand *h ) {
+SimAnnPlusPlanner::SimAnnPlusPlanner( Hand *h ) {
 	mHand = h;
 	init();
 	mEnergyCalculator = new SearchEnergy();
-	mSimAnn = new SimAnn();
+	mSimAnnPlus = new SimAnnPlus();
 	//mSimAnn->writeResults(true);
 }
 
 /**
- * @function ~SimAnnPlanner
+ * @function ~SimAnnPlusPlanner
  * @brief Destructor
  */
-SimAnnPlanner::~SimAnnPlanner(){
-	if (mSimAnn) delete mSimAnn;
+SimAnnPlusPlanner::~SimAnnPlusPlanner(){
+	if (mSimAnnPlus) delete mSimAnnPlus;
 }
 
 /**
  * @function setAnnealingParameters
  * @brief Set parameters for the annealing search
  */
-void SimAnnPlanner::setAnnealingParameters(AnnealingType y) {
+void SimAnnPlusPlanner::setAnnealingParameters(AnnealingType y) {
 	if (isActive()) {
 		DBGA("Stop planner before setting ann parameters");
 		return;
 	}
-	mSimAnn->setParameters(y);
+	mSimAnnPlus->setParameters(y);
 }
 
 /**
  * @function resetParameters
  * @brief Set current step to zero and reset the simulated annealing search
  */
-void SimAnnPlanner::resetParameters() {
+void SimAnnPlusPlanner::resetParameters() {
 	EGPlanner::resetParameters();
-	mSimAnn->reset();
-	mCurrentStep = mSimAnn->getCurrentStep();
+	mSimAnnPlus->reset();
+	mCurrentStep = mSimAnnPlus->getCurrentStep();
 	mCurrentState->setEnergy(1.0e8);
 }
 
@@ -84,7 +84,7 @@ void SimAnnPlanner::resetParameters() {
  * @function initialized
  * @brief True if there is an initial state set, false otherwise
  */
-bool SimAnnPlanner::initialized() {
+bool SimAnnPlusPlanner::initialized() {
 	if (!mCurrentState) return false;
 	return true;
 }
@@ -93,7 +93,7 @@ bool SimAnnPlanner::initialized() {
  * @function setModelState
  * @brief Set current state and some other things that I don't get just yet
  */
-void SimAnnPlanner::setModelState(const GraspPlanningState *modelState) {
+void SimAnnPlusPlanner::setModelState(const GraspPlanningState *modelState) {
 	if (isActive()) {
 		DBGA("Can not change model state while planner is running");
 		return;
@@ -121,15 +121,15 @@ void SimAnnPlanner::setModelState(const GraspPlanningState *modelState) {
  * @function mainLoop
  * @brief Iterate function for single-thread
  */
-void SimAnnPlanner::mainLoop() {
+void SimAnnPlusPlanner::mainLoop() {
 	GraspPlanningState *input = NULL;
 	if ( processInput() ) {
 		input = mTargetState;
 	}
 
 	//call sim ann
-	SimAnn::Result result = mSimAnn->iterate(mCurrentState, mEnergyCalculator, input);
-	if ( result == SimAnn::FAIL) {
+	SimAnnPlus::Result result = mSimAnnPlus->iterate(mCurrentState, mEnergyCalculator, input);
+	if ( result == SimAnnPlus::FAIL) {
 		DBGP("Sim ann failed");
 		return;
 	}
@@ -139,7 +139,7 @@ void SimAnnPlanner::mainLoop() {
 	double worstEnergy;
 	if ((int)mBestList.size() < BEST_LIST_SIZE) worstEnergy = 1.0e5;
 	else worstEnergy = mBestList.back()->getEnergy();
-	if (result == SimAnn::JUMP && mCurrentState->getEnergy() < worstEnergy) {
+	if (result == SimAnnPlus::JUMP && mCurrentState->getEnergy() < worstEnergy) {
 		GraspPlanningState *insertState = new GraspPlanningState(mCurrentState);
 		//but check if a similar solution is already in there
 		if (!addToListOfUniqueSolutions(insertState,&mBestList,0.2)) {
@@ -153,16 +153,18 @@ void SimAnnPlanner::mainLoop() {
 		}
 	}
 	render();
-	mCurrentStep = mSimAnn->getCurrentStep();
+	mCurrentStep = mSimAnnPlus->getCurrentStep();
 	if (mCurrentStep % 100 == 0 && !mMultiThread) emit update();
 	if (mMaxSteps == 200) {DBGP("Child at " << mCurrentStep << " steps");}
 }
+
+
 
 /**
  * @function checkTerminationConditions
  * @brief Check if planner should finish (max Steps /time reached) or if it is already finished
  */
-bool SimAnnPlanner::checkTerminationConditions() {
+bool SimAnnPlusPlanner::checkTerminationConditions() {
 
 	if (!isActive()) return true;
 	bool termination = false;

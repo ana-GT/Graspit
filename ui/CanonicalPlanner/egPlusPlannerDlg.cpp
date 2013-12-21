@@ -23,7 +23,7 @@
 //
 //######################################################################
 
-#include "egPlannerDlg.h"
+#include "egPlusPlannerDlg.h"
 
 #include <QGridLayout>
 #include <QCheckBox>
@@ -52,11 +52,12 @@
 #include "guidedPlanner.h"
 #include "loopPlanner.h"
 
+#include "simAnnPlusPlanner.h"
 
 //#define GRASPITDBG
 #include "debug.h"
 
-void EigenGraspPlannerDlg::exitButton_clicked()
+void EigenGraspPlusPlannerDlg::exitButton_clicked()
 {
  QDialog::accept();
 }
@@ -65,7 +66,7 @@ void EigenGraspPlannerDlg::exitButton_clicked()
  * @function init
  * @brief Initialize interface
  */
-void EigenGraspPlannerDlg::init()
+void EigenGraspPlusPlannerDlg::init()
 { 
 
  // Energy box: Set type of energy measurement
@@ -102,10 +103,7 @@ void EigenGraspPlannerDlg::init()
 
  // Space search: Default Axis angle
  spaceSearchBox->insertItem("Complete");
- spaceSearchBox->insertItem("Axis-angle");
- spaceSearchBox->insertItem("Ellipsoid");
- spaceSearchBox->insertItem("Approach");
- spaceSearchBox->setCurrentItem(1); // Default: Axis-Angle
+ spaceSearchBox->setCurrentItem(0); // Default: Axis-Angle
 
  // Grasp visualization: Only available after planning has taken place
  prevGraspButton->setEnabled(FALSE);
@@ -135,7 +133,7 @@ void EigenGraspPlannerDlg::init()
  * @function destroy
  * @brief Takes care of closing / destroying stuff once window is closed
  */
-void EigenGraspPlannerDlg::destroy() {
+void EigenGraspPlusPlannerDlg::destroy() {
 
  delete mHandObjectState;
  if (mPlanner) delete mPlanner;
@@ -169,8 +167,8 @@ void EigenGraspPlannerDlg::destroy() {
  * @function setMembers
  * @brief Initialize abstract egPlanner when its window option is selected
  */
-void EigenGraspPlannerDlg::setMembers( Hand *h,
-				       GraspableBody *b ) {
+void EigenGraspPlusPlannerDlg::setMembers( Hand *h,
+					   GraspableBody *b ) {
 
 	mPlanner = NULL;
 	mHand = h;
@@ -201,7 +199,7 @@ void EigenGraspPlannerDlg::setMembers( Hand *h,
  * @function setVariableLayout
  * @brief Set variable check boxes according to the handObject state configuration
  */
-void EigenGraspPlannerDlg::setVariableLayout()
+void EigenGraspPlusPlannerDlg::setVariableLayout()
 {
  //cleanup
  for (unsigned int i=0; i<varNames.size(); i++) {
@@ -256,7 +254,7 @@ void EigenGraspPlannerDlg::setVariableLayout()
  * @function updateVariableLayout
  * @brief Update with date from handObject state
  */
-void EigenGraspPlannerDlg::updateVariableLayout()
+void EigenGraspPlusPlannerDlg::updateVariableLayout()
 {
 	int i;
  for (i=0; i<mHandObjectState->getNumVariables(); i++) {
@@ -279,7 +277,7 @@ void EigenGraspPlannerDlg::updateVariableLayout()
  * @function updateInputLayout
  * @brief Still unsure what this does, but it is related with the CyberGlove
  */
-void EigenGraspPlannerDlg::updateInputLayout() {
+void EigenGraspPlusPlannerDlg::updateInputLayout() {
 
 	int i;
  for (i=0; i<mHandObjectState->getNumVariables(); i++) {
@@ -323,7 +321,7 @@ void EigenGraspPlannerDlg::updateInputLayout() {
  * @function variableInputChanged
  * @brief Something was changed in the variable box for input
  */
-void EigenGraspPlannerDlg::variableInputChanged() {
+void EigenGraspPlusPlannerDlg::variableInputChanged() {
 
 	assert(mPlanner);
 	GraspPlanningState *t = mPlanner->getTargetState();
@@ -350,7 +348,7 @@ void EigenGraspPlannerDlg::variableInputChanged() {
  * @function variableCheckBoxChanged
  * @brief Check if some of the variable parameters is active / inactive and set it to fixed/non-fixed respectively
  */
-void EigenGraspPlannerDlg::variableCheckBoxChanged() {
+void EigenGraspPlusPlannerDlg::variableCheckBoxChanged() {
 
  for (int i=0; i<mHandObjectState->getNumVariables(); i++) {
   if (varCheck[i]->isChecked()) mHandObjectState->getVariable(i)->setFixed(false);
@@ -366,7 +364,7 @@ void EigenGraspPlannerDlg::variableCheckBoxChanged() {
  * @function spaceSearchBox_activated
  * @brief Set planner type of search state
  */
-void EigenGraspPlannerDlg::spaceSearchBox_activated( const QString &s )
+void EigenGraspPlusPlannerDlg::spaceSearchBox_activated( const QString &s )
 {
  if ( s==QString("Complete") ) {
   mHandObjectState->setPositionType(SPACE_COMPLETE);
@@ -384,6 +382,7 @@ void EigenGraspPlannerDlg::spaceSearchBox_activated( const QString &s )
   fprintf(stderr,"WRONG SEARCH TYPE IN DROP BOX!\n");
  }
  mHandObjectState->reset();
+
  updateVariableLayout();
  //force a reset of the planner
  if (mPlanner) mPlanner->invalidateReset();
@@ -396,7 +395,7 @@ void EigenGraspPlannerDlg::spaceSearchBox_activated( const QString &s )
  * @function prevGraspButton_clicked
  * @brief Shows previous grasp in the BestGrasp list of mPlanner
  */
-void EigenGraspPlannerDlg::prevGraspButton_clicked() {
+void EigenGraspPlusPlannerDlg::prevGraspButton_clicked() {
  mDisplayState--;
  updateResults(true);
 }
@@ -405,7 +404,7 @@ void EigenGraspPlannerDlg::prevGraspButton_clicked() {
  * @function bestGraspButton_clicked
  * @brief Shows the best grasp in the BestGrasp list of mPlanner
  */
-void EigenGraspPlannerDlg::bestGraspButton_clicked() {
+void EigenGraspPlusPlannerDlg::bestGraspButton_clicked() {
  if (!mPlanner) return;
  mDisplayState = 0;
  updateResults(true);
@@ -415,12 +414,12 @@ void EigenGraspPlannerDlg::bestGraspButton_clicked() {
  * @function nextGraspButton_clicked
  * @brief Shows the next grasp in the BestGrasp list
  */
-void EigenGraspPlannerDlg::nextGraspButton_clicked() {
+void EigenGraspPlusPlannerDlg::nextGraspButton_clicked() {
  mDisplayState++;
  updateResults(true);
 }
 
-void EigenGraspPlannerDlg::plannerUpdate()
+void EigenGraspPlusPlannerDlg::plannerUpdate()
 {
  assert(mPlanner);
  mDisplayState = 0;
@@ -435,7 +434,7 @@ void EigenGraspPlannerDlg::plannerUpdate()
  * @function updateResults
  * @brief Update based on any change detected in the interface
  */
-void EigenGraspPlannerDlg::updateResults(bool render) {
+void EigenGraspPlusPlannerDlg::updateResults(bool render) {
 
 	// To update, a mPlanner must exist
 	assert(mPlanner);
@@ -488,7 +487,7 @@ void EigenGraspPlannerDlg::updateResults(bool render) {
 // ----------------------------- Settings management ---------------------------
 
 
-void EigenGraspPlannerDlg::updateStatus()
+void EigenGraspPlusPlannerDlg::updateStatus()
 {
 	PlannerState s = DONE;
 	if (mPlanner) s = mPlanner->getState();
@@ -557,14 +556,14 @@ void EigenGraspPlannerDlg::updateStatus()
 	updateInputLayout();
 }
 
-void EigenGraspPlannerDlg::energyBox_activated( const QString & )
+void EigenGraspPlusPlannerDlg::energyBox_activated( const QString & )
 {
  //force a reset of the planner
 	if (mPlanner) mPlanner->invalidateReset();
 	updateStatus();
 }
 
-void EigenGraspPlannerDlg::setContactsBox_toggled( bool checked)
+void EigenGraspPlusPlannerDlg::setContactsBox_toggled( bool checked)
 {
  if (checked) {
   if ( mHand->getNumVirtualContacts() == 0 ) {
@@ -582,7 +581,7 @@ void EigenGraspPlannerDlg::setContactsBox_toggled( bool checked)
  updateStatus();
 }
 
-void EigenGraspPlannerDlg::readPlannerSettings()
+void EigenGraspPlusPlannerDlg::readPlannerSettings()
 {
  assert(mPlanner);
  //energy type
@@ -613,20 +612,21 @@ void EigenGraspPlannerDlg::readPlannerSettings()
  mPlanner->setMaxSteps(steps);
 }
 
-void EigenGraspPlannerDlg::plannerComplete()
+void EigenGraspPlusPlannerDlg::plannerComplete()
 {
  updateStatus();
  bestGraspButton_clicked();
 }
 //----------------------------------- Planner start / stop control stuff ---------------------------
 
-void EigenGraspPlannerDlg::plannerInit_clicked()
+void EigenGraspPlusPlannerDlg::plannerInit_clicked()
 {
  QString s = plannerTypeBox->currentText();
  if (s == QString("Sim. Ann.")) {
   if (mPlanner) delete mPlanner;
-  mPlanner = new SimAnnPlanner(mHand);
-  ((SimAnnPlanner*)mPlanner)->setModelState(mHandObjectState);
+  mPlanner = new SimAnnPlusPlanner(mHand);
+  mHandObjectState->getPosition()->setTran( mHand->getTran() );
+  ((SimAnnPlusPlanner*)mPlanner)->setModelState(mHandObjectState);
   energyBox->setEnabled(TRUE);
  } else if (s == QString("Loop")) {
   if (mPlanner) delete mPlanner;
@@ -664,7 +664,7 @@ void EigenGraspPlannerDlg::plannerInit_clicked()
  plannerReset_clicked();
 }
 
-void EigenGraspPlannerDlg::plannerReset_clicked() 
+void EigenGraspPlusPlannerDlg::plannerReset_clicked() 
 {
 	assert(mPlanner);
 	readPlannerSettings();
@@ -672,19 +672,19 @@ void EigenGraspPlannerDlg::plannerReset_clicked()
 	updateStatus();
 }
 
-void EigenGraspPlannerDlg::startPlanner()
+void EigenGraspPlusPlannerDlg::startPlanner()
 {
 	mPlanner->startPlanner();
 	updateStatus();
 }
 
-void EigenGraspPlannerDlg::stopPlanner()
+void EigenGraspPlusPlannerDlg::stopPlanner()
 {
 	mPlanner->pausePlanner();
 	updateStatus();
 }
 
-void EigenGraspPlannerDlg::plannerStart_clicked()
+void EigenGraspPlusPlannerDlg::plannerStart_clicked()
 {	
 	if (!mPlanner->isActive()){
 		startPlanner();
@@ -696,7 +696,7 @@ void EigenGraspPlannerDlg::plannerStart_clicked()
 /**
  * @function plannerPrint_clicked
  */
-void EigenGraspPlannerDlg::plannerPrint_clicked() {
+void EigenGraspPlusPlannerDlg::plannerPrint_clicked() {
   printf("Printing info \n");
 
   FILE *f = fopen("graspInfo_stored.txt","w");
@@ -707,7 +707,7 @@ void EigenGraspPlannerDlg::plannerPrint_clicked() {
   printf("Done printing info \n");
 }
 
-void EigenGraspPlannerDlg::plannerTypeBox_activated( const QString & )
+void EigenGraspPlusPlannerDlg::plannerTypeBox_activated( const QString & )
 {
 	if (mPlanner) {
 		delete mPlanner;
@@ -718,13 +718,13 @@ void EigenGraspPlannerDlg::plannerTypeBox_activated( const QString & )
 
 //----------------------------------- Dedicated on-line planner control ---------------------------
 
-void EigenGraspPlannerDlg::autoGraspBox_clicked()
+void EigenGraspPlusPlannerDlg::autoGraspBox_clicked()
 {
 
 }
 
 //this slot does the updating that's specific to the online planner
-void EigenGraspPlannerDlg::onlinePlannerUpdate()
+void EigenGraspPlusPlannerDlg::onlinePlannerUpdate()
 {
  assert( mPlanner->getType() == PLANNER_ONLINE);
  OnLinePlanner *op = (OnLinePlanner*)mPlanner;
@@ -762,7 +762,7 @@ void EigenGraspPlannerDlg::onlinePlannerUpdate()
  fcBufferLabel->setText("FC Thread buffer: " + num); 
 }
 
-void EigenGraspPlannerDlg::onlineGraspButton_clicked()
+void EigenGraspPlusPlannerDlg::onlineGraspButton_clicked()
 {
  assert( mPlanner->getType() == PLANNER_ONLINE);
  OnLinePlanner *op = (OnLinePlanner*)mPlanner;
@@ -770,7 +770,7 @@ void EigenGraspPlannerDlg::onlineGraspButton_clicked()
  onlinePlannerUpdate();
 }
 
-void EigenGraspPlannerDlg::onlineReleaseButton_clicked()
+void EigenGraspPlusPlannerDlg::onlineReleaseButton_clicked()
 {
  assert( mPlanner->getType() == PLANNER_ONLINE);
  OnLinePlanner *op = (OnLinePlanner*)mPlanner;
@@ -779,7 +779,7 @@ void EigenGraspPlannerDlg::onlineReleaseButton_clicked()
 }
 
 
-void EigenGraspPlannerDlg::onlinePlanButton_clicked()
+void EigenGraspPlusPlannerDlg::onlinePlanButton_clicked()
 {
  assert( mPlanner->getType() == PLANNER_ONLINE);
  OnLinePlanner *op = (OnLinePlanner*)mPlanner;
@@ -788,14 +788,14 @@ void EigenGraspPlannerDlg::onlinePlanButton_clicked()
 }
 
 
-void EigenGraspPlannerDlg::instantEnergyButton_clicked()
+void EigenGraspPlusPlannerDlg::instantEnergyButton_clicked()
 {
  assert(mPlanner);
 // mPlanner->instantEnergy();
 }
 
 
-void EigenGraspPlannerDlg::showCloneBox_toggled( bool c)
+void EigenGraspPlusPlannerDlg::showCloneBox_toggled( bool c)
 {
  assert( mPlanner->getType() == PLANNER_ONLINE);
  OnLinePlanner *op = (OnLinePlanner*)mPlanner;
@@ -803,14 +803,14 @@ void EigenGraspPlannerDlg::showCloneBox_toggled( bool c)
 }
 
 
-void EigenGraspPlannerDlg::showSolutionBox_toggled( bool c)
+void EigenGraspPlusPlannerDlg::showSolutionBox_toggled( bool c)
 {	
  assert( mPlanner->getType() == PLANNER_ONLINE);
  OnLinePlanner *op = (OnLinePlanner*)mPlanner;
  op->showSolutionClone(c);
 }
 
-void EigenGraspPlannerDlg::useVirtualHandBox_clicked()
+void EigenGraspPlusPlannerDlg::useVirtualHandBox_clicked()
 {
 	/*
  assert( mPlanner->getType() == PLANNER_ONLINE);
@@ -821,7 +821,7 @@ void EigenGraspPlannerDlg::useVirtualHandBox_clicked()
 
 }
 
-void EigenGraspPlannerDlg::useRealBarrettBox_toggled( bool s)
+void EigenGraspPlusPlannerDlg::useRealBarrettBox_toggled( bool s)
 {
  assert( mPlanner->getType() == PLANNER_ONLINE);
  OnLinePlanner *op = (OnLinePlanner*)mPlanner;
@@ -830,13 +830,13 @@ void EigenGraspPlannerDlg::useRealBarrettBox_toggled( bool s)
 
 //---------------------------------------- Input selection -----------------------------------------
 
-void EigenGraspPlannerDlg::inputGloveBox_toggled( bool on)
+void EigenGraspPlusPlannerDlg::inputGloveBox_toggled( bool on)
 {
 	assert(mPlanner);
 	mPlanner->setInput(INPUT_GLOVE, on);
 }
 
-void EigenGraspPlannerDlg::inputLoadButton_clicked()
+void EigenGraspPlusPlannerDlg::inputLoadButton_clicked()
 {
 	assert(mPlanner);
 	QString fn = QFileDialog::getOpenFileName(this, QString(),  QString(getenv("GRASPIT"))+QString("/models/grasps"),

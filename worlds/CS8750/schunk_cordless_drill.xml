@@ -8,14 +8,14 @@
 	</graspableBody>
 	<robot>
 		<filename>models/robots/Schunk/Schunk.xml</filename>
-		<dofValues>+0 -1.5708 -1.5708 -1.5708 -1.5708 +0 -1.5708 -1.5708</dofValues>
+		<dofValues>+1.06154 -0.682751 +0.656551 -0.682751 +0.656551 +0 -0.682751 +0.656551 </dofValues>
 		<transform>
-			<fullTransform>(0.706467 0.707745 0.001410 0.000000)[-1.077200 175.468638 -87.644100]</fullTransform>
+			<fullTransform>(-0.791789 -0.466487 -0.330757 -0.214615)[-141.549 +111.628 -141.33]</fullTransform>
 		</transform>
 	</robot>
 	<camera>
-		<position>+456.304 +473.356 +443.401</position>
-		<orientation>-0.340569 -0.379089 -0.860068 -0.0242284</orientation>
+		<position>-491.106 -260.275 +61.9013</position>
+		<orientation>+0.561097 -0.289281 -0.43037 +0.645189</orientation>
 		<focalDistance>+600.211</focalDistance>
 	</camera>
 </world>

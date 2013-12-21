@@ -47,7 +47,7 @@ UniSampling::UniSampling( Hand *_h ) {
  * @brief Destructor
  */
 UniSampling::~UniSampling() {
-
+	reset();
 }
 
 /**
@@ -67,6 +67,21 @@ void UniSampling::init() {
     mCurrentState = NULL;
     srand( time(NULL) );
 }
+
+/**
+ * @function reset
+ * @brief Erases all stored grasps
+ */
+void UniSampling::reset() {
+
+	while( !mSampleGrasps.empty() ) {
+		delete( mSampleGrasps.back() );
+		mSampleGrasps.pop_back();
+	}
+}
+
+
+
 /**
  * @function setCurrentState
  */

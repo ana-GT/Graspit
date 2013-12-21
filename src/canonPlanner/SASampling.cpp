@@ -46,7 +46,7 @@ SASampling::SASampling( Hand *_h ) {
  * @brief Destructor
  */
 SASampling::~SASampling() {
-
+	reset();
 }
 
 /**
@@ -66,8 +66,20 @@ void SASampling::init() {
     mCurrentState = NULL;
     // Initialize random seed
     srand( time(NULL) );
-
 }
+
+/**
+ * @function reset
+ * @brief Erases all stored grasps
+ */
+void SASampling::reset() {
+
+	while( !mSampleGrasps.empty() ) {
+		delete( mSampleGrasps.back() );
+		mSampleGrasps.pop_back();
+	}
+}
+
 /**
  * @function setCurrentState
  */

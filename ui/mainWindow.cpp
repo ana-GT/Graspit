@@ -94,6 +94,7 @@
 // Taxonomy
 #include "canonicalPlannerDlg.h"
 #include "samplingDlg.h"
+#include "egPlusPlannerDlg.h"
 
 //------------------------------------ CONSTRUCTOR AND DESTRUCTOR -------------------------------------
 
@@ -184,6 +185,9 @@ MainWindow::MainWindow(QWidget *parent)
   // -- Canonical planner menu
   QObject::connect( mUI->canonicalPlannerAction, SIGNAL(triggered()), this, SLOT(canonicalPlannerActivated()) );
   QObject::connect( mUI->samplingAction, SIGNAL(triggered()), this, SLOT(samplingActivated()) );
+
+  QObject::connect(mUI->graspEigenGraspPlus_PlannerAction, SIGNAL(triggered()),
+                   this, SLOT(eigenGraspPlusPlannerActivated()));
 
 }
 
@@ -801,6 +805,8 @@ void MainWindow::eigenGraspPlannerActivated()
   dlg->setAttribute(Qt::WA_DeleteOnClose, true);
   dlg->show();
 }
+
+
 
 void MainWindow::dbaseGUIAction_activated()
 {
@@ -1427,4 +1433,29 @@ void MainWindow::samplingActivated() {
 	dlg->setAttribute( Qt::WA_DeleteOnClose, true );
 
 	dlg->show();
+}
+
+
+/**
+ * @function eigenGraspPlusPlannerActivated
+ */
+void MainWindow::eigenGraspPlusPlannerActivated() {
+    
+    assert( world->getCurrentHand() );	
+    if (world->getCurrentHand()->getEigenGrasps() == NULL) {
+	fprintf(stderr,"Current hand has no EigenGrasp information!\n");
+	return;
+    }
+    int gb = mUI->graspedBodyBox->currentItem();
+    if ( gb < 0 || world->getNumGB() < gb+1 ) {
+	fprintf(stderr,"No object selected\n");
+	return;
+    }
+    
+    EigenGraspPlusPlannerDlg *dlg = new EigenGraspPlusPlannerDlg(mWindow);
+    dlg->setMembers(world->getCurrentHand(), world->getGB(gb));
+    dlg->setAttribute(Qt::WA_ShowModal, false);
+    dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+    dlg->show();
+    
 }

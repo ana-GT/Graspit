@@ -30,7 +30,7 @@ class  SamplingDlg : public QDialog,
   QTextStream stream;
   QFile masterFile;
   
-  GraspPlanningState *mHandObjectState;
+  GraspPlanningState *mInitState;
   GraspableBody *mObject;
   Hand *mHand;
   int mDisplayState;
@@ -47,6 +47,9 @@ class  SamplingDlg : public QDialog,
  public:
  SamplingDlg(QWidget *parent = 0) : QDialog(parent) {
     setupUi(this);
+
+    rotationTypeBox->addItem("Quaternion");
+    rotationTypeBox->addItem("Axis-Angle");
     init();
   }
   ~SamplingDlg(){destroy();}
@@ -56,6 +59,7 @@ class  SamplingDlg : public QDialog,
   void exitButton_clicked();
   void sampleSAButton_clicked();
   void sampleUniButton_clicked();
+  void rotationTypeBox_activated( int _i );
 
   void sampleSASpinBox_valueChanged(int);
   void sampleUniSpinBox_valueChanged(int);

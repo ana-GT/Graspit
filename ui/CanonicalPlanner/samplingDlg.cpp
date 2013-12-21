@@ -56,18 +56,22 @@ void SamplingDlg::exitButton_clicked() {
  */
 void SamplingDlg::sampleSAButton_clicked() {
 
-	mSASampling->setCurrentState( mHandObjectState );
+	mSASampling->reset();
+	mSASampling->setCurrentState( mInitState );
 
-	PositionState* ps = mHandObjectState->getPosition();
+	PositionState* ps = mInitState->getPosition();
 	for( int i = 0; i < ps->getNumVariables(); ++i ) {
-		std::cout << "Variable name: "<< ps->getVariable(i)->getName().toStdString() << std::endl;
-		std::cout << "Minimum: "<< ps->getVariable(i)->mMinVal << std::endl;
-		std::cout << "Maximum: "<< ps->getVariable(i)->mMaxVal << std::endl;
+		std::cout << "Variable: "<< ps->getVariable(i)->getName().toStdString() << "Min: "<< ps->getVariable(i)->mMinVal << " and Max: "<< ps->getVariable(i)->mMaxVal << std::endl;
+	}
+
+	PostureState* qs = mInitState->getPosture();
+	for( int i = 0; i < qs->getNumVariables(); ++i ) {
+		std::cout << "Variable: "<< qs->getVariable(i)->getName().toStdString() <<"Min: "<< qs->getVariable(i)->mMinVal << " and max: "<< qs->getVariable(i)->mMaxVal <<std::endl;
 	}
 
 
 	for( int i = 0; i < 30; ++i ) {
-	    mSASampling->storeGrasp( mSASampling->sampleNeighbor( mHandObjectState ) );
+	    mSASampling->storeGrasp( mSASampling->sampleNeighbor( mInitState ) );
 	}
 
 	std::cout << "Generated samples fine with SA" << std::endl;
@@ -81,9 +85,10 @@ void SamplingDlg::sampleSAButton_clicked() {
  */
 void SamplingDlg::sampleUniButton_clicked() {
 
-	mUniSampling->setCurrentState( mHandObjectState );
+	mUniSampling->reset();
+	mUniSampling->setCurrentState( mInitState );
 
-	PositionState* ps = mHandObjectState->getPosition();
+	PositionState* ps = mInitState->getPosition();
 	for( int i = 0; i < ps->getNumVariables(); ++i ) {
 		std::cout << "Variable name: "<< ps->getVariable(i)->getName().toStdString() << std::endl;
 		std::cout << "Minimum: "<< ps->getVariable(i)->mMinVal << std::endl;
@@ -92,12 +97,32 @@ void SamplingDlg::sampleUniButton_clicked() {
 
 
 	for( int i = 0; i < 30; ++i ) {
-	mUniSampling->storeGrasp( mUniSampling->sampleNeighbor( mHandObjectState ) );
+	mUniSampling->storeGrasp( mUniSampling->sampleNeighbor( mInitState ) );
 	}
 
 	std::cout << "Generated samples fine with Uni" << std::endl;
 
 	return;
+}
+
+/**
+ * @function rotationTypeBox_activated
+ */
+void SamplingDlg::rotationTypeBox_activated( int _i ) {
+
+	// Quaternion (see constructor for order)
+	if( _i == 0 ) {
+		transf T = mInitState->getPosition()->getCoreTran();
+		mInitState->setPositionType( SPACE_COMPLETE );
+		mInitState->getPosition()->setTran(T);
+	}
+	// Angle axis
+	else if( _i == 1 ) {
+		transf T = mInitState->getPosition()->getCoreTran();
+		mInitState->setPositionType( SPACE_AXIS_ANGLE );
+		mInitState->getPosition()->setTran(T);
+
+	}
 }
 
 
@@ -147,12 +172,17 @@ void SamplingDlg::setMembers( Hand *_h, GraspableBody *_b ) {
   mHand->getGrasp()->setObjectNoUpdate( mObject );
   mHand->getGrasp()->setGravity( false );
 
-  mHandObjectState = new GraspPlanningState( mHand );
-  mHandObjectState->setObject( mObject );
-  mHandObjectState->setPositionType( SPACE_COMPLETE );
-  mHandObjectState->setRefTran(mObject->getTran());
-  mHandObjectState->reset();
-  mHandObjectState->getPosition()->setTran( mHand->getTran() );
+  mInitState = new GraspPlanningState( mHand );
+  mInitState->setObject( mObject );
+
+  mInitState->setPositionType( SPACE_COMPLETE );
+  mInitState->setPostureType( POSE_EIGEN );
+  mInitState->setRefTran(mObject->getTran());
+
+  // Set all values to zero
+  mInitState->reset();
+  // Set Tx,Ty,Tz, Qw,Qx,Qy,Qz
+  mInitState->getPosition()->setTran( mHand->getTran() );
 
   mSASampling = new SASampling( mHand );
   mUniSampling = new UniSampling( mHand );

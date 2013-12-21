@@ -78,7 +78,7 @@ void EGPlanner::init() {
 	mRenderCount = 0;
 	mLastRenderState = NULL;
 	mMaxSteps = 100000;
-	mMaxTime = -1;
+	mMaxTime = 10; //-1;
 	mMultiThread = false;
 	mState = INIT;
 	mUsesClone = false;

@@ -42,6 +42,7 @@ public:
 	~UniSampling();
 
 	void init();
+	void reset();
 
 	void mainLoop();
 	void setCurrentState( GraspPlanningState *gps );

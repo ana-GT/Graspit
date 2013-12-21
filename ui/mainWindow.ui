@@ -460,6 +460,7 @@
     <addaction name="separator"/>
     <addaction name="graspEigenGrasp_InterfaceAction"/>
     <addaction name="graspEigenGrasp_PlannerAction"/>
+    <addaction name="graspEigenGraspPlus_PlannerAction"/>
     <addaction name="graspContact_ExaminerAction"/>
    </widget>
    <widget class="QMenu" name="dbaseMenu">
@@ -1006,6 +1007,17 @@
     <cstring>graspEigenGrasp_PlannerAction</cstring>
    </property>
   </action>
+  <action name="graspEigenGraspPlus_PlannerAction">
+   <property name="text">
+    <string>EigenGrasp Plus Planner...</string>
+   </property>
+   <property name="iconText">
+    <string>EigenGrasp Plus Planner...</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>graspEigenGraspPlus_PlannerAction</cstring>
+   </property>
+  </action>
   <action name="sensorsBarrett_HandAction">
    <property name="text">
     <string>Barrett Hand...</string>
@@ -1083,6 +1095,11 @@
   <action name="samplingAction">
    <property name="text">
     <string>Sampling</string>
+   </property>
+  </action>
+  <action name="actionEigenGraspPlus_Planner">
+   <property name="text">
+    <string>EigenGraspPlus Planner...</string>
    </property>
   </action>
   <actiongroup name="elementGroup">

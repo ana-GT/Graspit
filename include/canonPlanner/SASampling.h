@@ -39,15 +39,12 @@ protected:
 
 	std::vector<GraspPlanningState*> mSampleGrasps;
 
-	// Sampling SA
-	//SimAnn* mSA;
-	//double mT;
-
 public:
 	SASampling( Hand *_h );
 	~SASampling();
 
 	void init();
+	void reset();
 
 	void mainLoop();
 	void setCurrentState( GraspPlanningState *gps );
