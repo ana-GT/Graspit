@@ -34,7 +34,7 @@
 #include "triangle.h"
 
 /*! \file
-	Defines the collison detection hierarchy for a model. This consists of 
+	Defines the collision detection hierarchy for a model. This consists of
 	models and their bounding box (bb) hierarchies.
 
 	Other than implementing the interface, and thus being the public face

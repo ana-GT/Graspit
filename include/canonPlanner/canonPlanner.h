@@ -59,6 +59,7 @@ protected:
     ~CanonPlanner();
 
 	void init();
+	void getBoundingBox();
     bool readBaseGraspFile( std::string _filename );
     int addBaseGrasp( GraspPlanningState* _gps );
     int addSampleGrasp( int _i, GraspPlanningState* _gps );

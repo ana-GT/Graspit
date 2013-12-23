@@ -7,6 +7,7 @@
 #include "worldElement.h"
 #include "robot.h"
 #include "world.h"
+#include "bBox.h"
 
 #include "debug.h"
 
@@ -57,6 +58,17 @@ CanonPlanner::~CanonPlanner() {
  */
 void CanonPlanner::init() {
 
+}
+
+/**
+ * @function getBoundingBox
+ */
+void CanonPlanner::getBoundingBox() {
+	std::vector<BoundingBox> bvs;
+	mHand->getWorld()->getBvs( mObject, 0, &bvs );
+	std::cout << "Size of vector bounding box:"<<bvs.size() << std::endl;
+	std::cout << "Bounding box of object: Transf is: \n"<< bvs[0].getTran() << std::endl;
+	std::cout << "Bounding box of object: Half size: \n"<< bvs[0].halfSize << std::endl;
 }
 
 /**
@@ -252,8 +264,51 @@ bool CanonPlanner::closeSampleGrasps( int _i ) {
  */
 void CanonPlanner::mainLoop() {
 
+	std::cout <<"Object is located in: "<< mObject->getTran() << std::endl;
 	clock_t ts, tf;
 	double dt;
+
+	std::vector<BoundingBox> bvs;
+	mHand->getWorld()->getBvs( mObject, 0, &bvs );
+	transf Tobj_box = bvs[0].getTran();
+
+	transf Tw_obj = mObject->getTran();
+
+	std::cout << "Transform of bounding BOX Rot: \n"<< Tobj_box.affine() << std::endl;
+	std::cout << "Transform of bound BOX translation: \n"<<Tobj_box.translation()<< std::endl;
+
+	vec3 pos = bvs[0].halfSize;
+	std::cout << "Size bounding box: "<< pos << std::endl;
+	std::vector<vec3> canAxis(6);
+	double offset = 100;
+	canAxis[0] = vec3( offset + pos[0], 0, 0);
+	canAxis[1] = vec3( -(offset + pos[0]), 0, 0);
+	canAxis[2] = vec3( 0, offset + pos[1], 0);
+	canAxis[3] = vec3( 0, -(offset +pos[1]), 0);
+	canAxis[4] = vec3( 0, 0, offset + pos[2]);
+	canAxis[5] = vec3( 0, 0, -(offset +pos[2]));
+
+	// Set positions
+	std::vector<vec3> p_obj_hand(6);
+	mat3 Robj_box = Tobj_box.affine();
+	for( int i = 0; i < 6; ++i ) {
+		p_obj_hand[i] = Robj_box*canAxis[i] + Tobj_box.translation();
+	}
+std::cout << "Robj:\n "<< Robj_box << std::endl;
+	// Set rotations
+	std::vector<mat3> r_obj_hand(6);
+	r_obj_hand[0] = ( ( rotate_transf(-M_PI / 2.0, vec3::Y) ).affine() )*Robj_box.inverse();
+	r_obj_hand[1] = ( ( rotate_transf(M_PI / 2.0, vec3::Y) ).affine() )*Robj_box.inverse();
+	r_obj_hand[2] = ( ( rotate_transf(M_PI / 2.0, vec3::X) ).affine() )*Robj_box.inverse();
+	r_obj_hand[3] = ( ( rotate_transf(-M_PI / 2.0, vec3::X) ).affine() )*Robj_box.inverse();
+	r_obj_hand[4] = ( ( rotate_transf(M_PI, vec3::Y) ).affine() )*Robj_box.inverse();
+	r_obj_hand[5] = Robj_box.inverse();
+
+	for( int i = 0; i < 6; ++i ) {
+		mBaseGrasps[i]->getPosition()->setTran( transf( r_obj_hand[i], p_obj_hand[i] ) );
+	}
+
+/*
 
 	ts = clock();
 	for( int i = 0; i < mBaseGrasps.size(); ++i ) {
@@ -276,6 +331,7 @@ void CanonPlanner::mainLoop() {
 	}
 
 	std::cout << "Done with main loop "<< std::endl;
+	*/
 }
 
 

@@ -128,7 +128,7 @@ protected:
   //! A pointer to a node that offsets the geometry of this model
   SoTransform *IVOffsetTran;
 
-  //! A pointer to a node that can hold the geometry of the bounding volume struture
+  //! A pointer to a node that can hold the geometry of the bounding volume structure
   SoSeparator *IVBVRoot;
 
 #ifdef GEOMETRY_LIB
@@ -151,7 +151,7 @@ protected:
   //! This tells us which bird in the flock the object is using
   int mBirdNumber;
 
-  //! The relative tranform used for the Flock of Birds
+  //! The relative transform used for the Flock of Birds
   FlockTransf mFlockTran;
 
   //! Inventor root of the axes in the body subtree
@@ -243,7 +243,7 @@ public:
   //! Tells us if this body's position is controlled by the Flock of Birds
   bool usesFlock(){return mUsesFlock;}
 
-  //! Which bird in the flock controlls this body
+  //! Which bird in the flock controls this body
   int getBirdNumber(){return mBirdNumber;}
 
   //! Where on the body the Flock of Birds sensor is mounted
@@ -333,7 +333,7 @@ public:
   virtual void removeContact(Contact *c);
   //! Removes a contact from the list of contacts at the previous time step
   virtual void removePrevContact(Contact *c);
-  //! Removes all the cotacts on this body (usually after a move)
+  //! Removes all the contacts on this body (usually after a move)
   virtual void breakContacts();
   //! Removes all virtual contacts on this body
   virtual void breakVirtualContacts();

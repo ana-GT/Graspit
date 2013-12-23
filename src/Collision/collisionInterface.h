@@ -108,7 +108,7 @@ public:
 	/*! Creates a clone of a body that shares the collision geometry hierarchy
 		but has its own transform and can be moved and queried for collision 
 		independently. WARNING: there are still problems with the cloning
-		mechanism. If the original is deleted, ot if its collision structures
+		mechanism. If the original is deleted, or if its collision structures
 		are changed, the lingering clone is almost certain to cause a crash.
 	*/
 	virtual void cloneBody(Body *clone, const Body *original) = 0;
@@ -171,7 +171,7 @@ public:
 	virtual void bodyRegion(const Body *body, position point, vec3 normal, 
 							double radius, Neighborhood *neighborhood)=0;
 
-	//! Returns the bounding box hierarchy at a certin depth for a body
+	//! Returns the bounding box hierarchy at a certain depth for a body
 	virtual void getBoundingVolumes(const Body*, int, std::vector<BoundingBox>*){}
 
 	/*! Informs the collision detection system that this is now a new thread. All bodies 

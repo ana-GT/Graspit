@@ -372,10 +372,10 @@ set( apps_QT_FORMS apps/ui/samplingApp.ui )
 QT4_WRAP_UI( apps_FORMS_HEADERS ${apps_QT_FORMS} )
 QT4_WRAP_CPP( apps_MOC_HEADERS apps/samplingApp.h )
 
-add_executable( samplingApp apps/samplingMain.cpp apps/samplingApp.cpp ${apps_MOC_HEADERS} ${apps_FORMS_HEADERS} ${graspIt_headers} ${graspIt_sources}
-${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS}  ${graspIt_RESOURCES} )  
-target_link_libraries( samplingApp ${GraspItExt_LIBRARIES} graspIt_basic )
-set_target_properties( samplingApp PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
+#add_executable( samplingApp apps/samplingMain.cpp apps/samplingApp.cpp ${apps_MOC_HEADERS} ${apps_FORMS_HEADERS} ${graspIt_headers} ${graspIt_sources}
+#${graspIt_MOC_HEADERS} ${graspIt_FORMS_HEADERS}  ${graspIt_RESOURCES} )  
+#target_link_libraries( samplingApp ${GraspItExt_LIBRARIES} graspIt_basic )
+#set_target_properties( samplingApp PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin )
 
 
 
