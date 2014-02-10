@@ -39,11 +39,9 @@ class SoSensor;
 class SearchEnergy;
 class SimAnnPlus;
 
-/*!	This is the simplest implementation of the EGPlanner. It also has a 
-	SimAnn class for doing simulated annealing over	all variables. This 
-	is exactly what it does in the mainLoop() fctn. It buffers the best 
-	states (with lowest energy)	as it finds them.
-*/
+/**
+ * @class SimAnnPlusPlanner
+ */
 class SimAnnPlusPlanner : public EGPlanner
 {
 protected:
@@ -53,18 +51,17 @@ protected:
 	//! Calls a simulated annealing step and buffers the best solutions
 	void mainLoop();
 	//! Also resets the simulated annealer
-	void resetParameters();
+	virtual void resetParameters();
 public:
 	//! Also initializes the simulated annealer
 	SimAnnPlusPlanner(Hand *h);
 	~SimAnnPlusPlanner();
 	virtual PlannerType getType(){return PLANNER_SIM_ANN;}
+	virtual void pausePlanner();
 	void setAnnealingParameters(AnnealingType y);
+
 	virtual bool checkTerminationConditions();
 
-	//! Checks if a model state has been set
 	virtual bool initialized();
-	//! Has to be called BEFORE any planning can begin. 
-	/*! It tells the planner how the state it is searching on looks like (how many variables, etc). */
 	virtual void setModelState(const GraspPlanningState *modelState);
 };

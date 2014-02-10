@@ -19,31 +19,34 @@
 #include "canonPlanner.h"
 #include "matvec3D.h"
 
+#include "canonPlanner/simAnnPlusPlanner.h"
+#include "EGPlanner/simAnnPlanner.h"
+
 /**
  * @function CanonPlanner
  * @brief Constructor
  */
 CanonPlanner::CanonPlanner( Hand *_h ) {
 
-	// Set hand and object (probably the latter is not needed)
-    mHand = _h;
-	mObject = mHand->getGrasp()->getObject();
+  // Set hand and object (probably the latter is not needed)
+  mHand = _h;
+  mObject = mHand->getGrasp()->getObject();
 
-	init();
+  init();
 
-	// Set the openHand position
-	mOpenPosture = new PostureStateDOF( _h );
-	std::vector<double> openPose(8);
-	openPose[0] = +0; openPose[1] = -1.5708;
-	openPose[2] = -1.5708; openPose[3] = -1.5708;
-	openPose[4] = -1.5708; openPose[5] = +0;
-	openPose[6] = -1.5708; openPose[7] = -1.5708;
-	mOpenPosture->readFromArray(openPose);
-
-	sMaxTransSteps = 20;
-	sMaxRotSteps = 6;
-	sDx = 10; // 1 cm = 0.01*1000
-	sRotStep = 20.0*M_PI / 180.0;
+  // Set the openHand position
+  mOpenPosture = new PostureStateDOF( _h );
+  std::vector<double> openPose(8);
+  openPose[0] = +0; openPose[1] = -1.5708;
+  openPose[2] = -1.5708; openPose[3] = -1.5708;
+  openPose[4] = -1.5708; openPose[5] = +0;
+  openPose[6] = -1.5708; openPose[7] = -1.5708;
+  mOpenPosture->readFromArray(openPose);
+  
+  sMaxTransSteps = 20;
+  sMaxRotSteps = 6;
+  sDx = 10; // 1 cm = 0.01*1000
+  sRotStep = 20.0*M_PI / 180.0;
 }
 
 /**
@@ -58,6 +61,13 @@ CanonPlanner::~CanonPlanner() {
  */
 void CanonPlanner::init() {
 
+}
+
+/**
+  *
+ */
+void CanonPlanner::pausePlanner() {
+	mPlanner->pausePlanner();
 }
 
 /**
@@ -257,44 +267,36 @@ bool CanonPlanner::closeSampleGrasps( int _i ) {
 	return true;
 }
 
-
 /**
- * @function mainLoop
- * @brief
+ * @function generateBaseGrasps
  */
-void CanonPlanner::mainLoop() {
-
-	std::cout <<"Object is located in: "<< mObject->getTran() << std::endl;
-	clock_t ts, tf;
-	double dt;
+void CanonPlanner::generateBaseGrasps() {
 
 	std::vector<BoundingBox> bvs;
 	mHand->getWorld()->getBvs( mObject, 0, &bvs );
+
 	transf Tobj_box = bvs[0].getTran();
+	mat3 Robj_box = Tobj_box.affine();
 
 	transf Tw_obj = mObject->getTran();
 
-	std::cout << "Transform of bounding BOX Rot: \n"<< Tobj_box.affine() << std::endl;
-	std::cout << "Transform of bound BOX translation: \n"<<Tobj_box.translation()<< std::endl;
-
-	vec3 pos = bvs[0].halfSize;
-	std::cout << "Size bounding box: "<< pos << std::endl;
+	vec3 boxDim = bvs[0].halfSize;
 	std::vector<vec3> canAxis(6);
 	double offset = 100;
-	canAxis[0] = vec3( offset + pos[0], 0, 0);
-	canAxis[1] = vec3( -(offset + pos[0]), 0, 0);
-	canAxis[2] = vec3( 0, offset + pos[1], 0);
-	canAxis[3] = vec3( 0, -(offset +pos[1]), 0);
-	canAxis[4] = vec3( 0, 0, offset + pos[2]);
-	canAxis[5] = vec3( 0, 0, -(offset +pos[2]));
+	canAxis[0] = vec3( offset + boxDim[0], 0, 0);
+	canAxis[1] = vec3( -(offset + boxDim[0]), 0, 0);
+	canAxis[2] = vec3( 0, offset + boxDim[1], 0);
+	canAxis[3] = vec3( 0, -(offset + boxDim[1]), 0);
+	canAxis[4] = vec3( 0, 0, offset + boxDim[2]);
+	canAxis[5] = vec3( 0, 0, -(offset + boxDim[2]));
 
 	// Set positions
 	std::vector<vec3> p_obj_hand(6);
-	mat3 Robj_box = Tobj_box.affine();
+
 	for( int i = 0; i < 6; ++i ) {
 		p_obj_hand[i] = Robj_box*canAxis[i] + Tobj_box.translation();
 	}
-std::cout << "Robj:\n "<< Robj_box << std::endl;
+
 	// Set rotations
 	std::vector<mat3> r_obj_hand(6);
 	r_obj_hand[0] = ( ( rotate_transf(-M_PI / 2.0, vec3::Y) ).affine() )*Robj_box.inverse();
@@ -304,34 +306,141 @@ std::cout << "Robj:\n "<< Robj_box << std::endl;
 	r_obj_hand[4] = ( ( rotate_transf(M_PI, vec3::Y) ).affine() )*Robj_box.inverse();
 	r_obj_hand[5] = Robj_box.inverse();
 
+	// Generate base grasps
 	for( int i = 0; i < 6; ++i ) {
-		mBaseGrasps[i]->getPosition()->setTran( transf( r_obj_hand[i], p_obj_hand[i] ) );
+
+    	GraspPlanningState *gps = new GraspPlanningState( mHand );
+    	gps->setObject( mObject );
+
+    	// Wrist position + orientation
+    	gps->setPositionType( SPACE_COMPLETE );
+    	gps->setPostureType( POSE_DOF );
+    	gps->setRefTran( mObject->getTran() );
+    	gps->reset();
+
+		gps->getPosition()->setTran( transf( r_obj_hand[i], p_obj_hand[i] ) );
+    	gps->getPosture()->copyValuesFrom( mOpenPosture );
+
+    	addBaseGrasp( gps );
 	}
 
-/*
+}
 
-	ts = clock();
-	for( int i = 0; i < mBaseGrasps.size(); ++i ) {
-		std::cout<<"Making grasp ["<<i<<"] valid"<<std::endl;
-		makeGraspValid(i);
-		std::cout << "Valid samples ["<<i<<"]: "<< mSampleGrasps[i].size() << std::endl;
+/***
+ * @function plannerUpdate
+ */
+void CanonPlanner::plannerUpdate() {
+
+}
+void CanonPlanner::plannerComplete() {
+
+  std::cout << "Stopped planner with "<< mPlanner->getCurrentStep()<<" steps"<< std::endl;
+  std::cout << " Running time: "<< mPlanner->getRunningTime() << std::endl;
+  for( int i = 0; i < mPlanner->getListSize(); ++i ) {
+    mSampleGrasps[mCounter].push_back( new GraspPlanningState( mPlanner->getGrasp(i)) );  
+  }
+
+  // Put limits back to normal
+  if( isMin[mCounter] == true ) {
+    mBaseGrasps[mCounter]->getPosition()->getVariable( QString( varName[mCounter].c_str() ) )->mMaxVal = 
+      mStoredGps->getPosition()->getVariable( QString( varName[mCounter].c_str() ) )->mMaxVal; 
+  } else {
+    mBaseGrasps[mCounter]->getPosition()->getVariable( QString( varName[mCounter].c_str() ) )->mMinVal = 
+      mStoredGps->getPosition()->getVariable( QString( varName[mCounter].c_str() ) )->mMinVal; ;  
+  }
+
+}
+
+/**
+ * @function mainLoop
+ * @brief
+ */
+void CanonPlanner::mainLoop() {
+
+  // Store important information
+  mStoredGps = new GraspPlanningState( mHand );
+  varLim.resize(6); varName.resize(6); isMin.resize(6);
+
+
+
+  // 1. Generate base grasps
+  generateBaseGrasps();
+  
+  int maxIndX, maxIndY, maxIndZ;
+  int minIndX, minIndY, minIndZ;
+  double maxX, maxY, maxZ;
+  double minX, minY, minZ;
+  
+  maxIndX = 0; maxIndY = 0; maxIndZ = 0;
+  minIndX = 0; minIndY = 0; minIndZ = 0;
+  
+  maxX = mBaseGrasps[maxIndX]->getPosition()->getVariable("Tx")->getValue();
+  minX = mBaseGrasps[minIndX]->getPosition()->getVariable("Tx")->getValue();
+  maxY = mBaseGrasps[maxIndX]->getPosition()->getVariable("Ty")->getValue();
+  minY = mBaseGrasps[minIndX]->getPosition()->getVariable("Ty")->getValue();
+  maxZ = mBaseGrasps[maxIndX]->getPosition()->getVariable("Tz")->getValue();
+  minZ = mBaseGrasps[minIndX]->getPosition()->getVariable("Tz")->getValue();
+  double eval;
+  
+  for( int i = 1; i < 6; ++i ) {
+    eval = mBaseGrasps[i]->getPosition()->getVariable("Tx")->getValue();
+    if(  eval > maxX ) { maxIndX = i; maxX = eval; }
+    if( eval < minX ) { minIndX = i; minX = eval; }
+    
+    eval = mBaseGrasps[i]->getPosition()->getVariable("Ty")->getValue();
+    if(  eval > maxY ) { maxIndY = i; maxY = eval; }
+    if( eval < minY ) { minIndY = i; minY = eval; }
+    
+    eval = mBaseGrasps[i]->getPosition()->getVariable("Tz")->getValue();
+    if(  eval > maxZ ) { maxIndZ = i; maxZ = eval; }
+    if( eval < minZ ) { minIndZ = i; minZ = eval; }
+  }
+  
+  //isMin varName varLim
+  isMin[maxIndX] = false; varName[maxIndX] = "Tx"; varLim[maxIndX] = maxX;
+  isMin[minIndX] = true; varName[minIndX] = "Tx"; varLim[minIndX] = minX;
+
+  isMin[maxIndY] = false; varName[maxIndY] = "Ty"; varLim[maxIndY] = maxY;
+  isMin[minIndY] = true; varName[minIndY] = "Ty"; varLim[minIndY] = minY;
+
+  isMin[maxIndZ] = false; varName[maxIndZ] = "Tz"; varLim[maxIndZ] = maxZ;
+  isMin[minIndZ] = true; varName[minIndZ] = "Tz"; varLim[minIndZ] = minZ;
+
+  std::cout << "Max X: "<< maxIndX << std::endl; 
+  std::cout << "Min X: "<< minIndX << std::endl; 
+
+  std::cout << "Max Y: "<< maxIndY << std::endl; 
+  std::cout << "Min Y: "<< minIndY << std::endl; 
+  
+  std::cout << "Max Z: "<< maxIndZ << std::endl; 
+  std::cout << "Min Z: "<< minIndZ << std::endl; 
+
+
+	// 2. Generate annealing search in localized area
+	mCounter = 3;
+	
+	mPlanner = new SimAnnPlanner( mHand );
+	//mBaseGrasps[mCounter]->getPosition()->getVariable( QString("Tx") )->mMaxJump = 50; // 1cm
+	//mBaseGrasps[mCounter]->getPosition()->getVariable( QString("Ty") )->mMaxJump = 50; // 1cm
+	//mBaseGrasps[mCounter]->getPosition()->getVariable( QString("Tz") )->mMaxJump = 50; // 1cm
+
+	// Modify the limit so the serch is only done in the area relevant
+	if( isMin[mCounter] == true ) {
+	  mBaseGrasps[mCounter]->getPosition()->getVariable( QString( varName[mCounter].c_str() ) )->mMaxVal = 0; 
+	} else {
+	  mBaseGrasps[mCounter]->getPosition()->getVariable( QString( varName[mCounter].c_str() ) )->mMinVal = 0;  
 	}
-	tf = clock();
-	dt = (double)(tf - ts)/CLOCKS_PER_SEC;
 
-	std::cout << "Time for making grasps valid: "<< dt << std::endl;
+	((SimAnnPlanner*) mPlanner)->setModelState( mBaseGrasps[mCounter] );
+	
+	mPlanner->setEnergyType( ENERGY_CONTACT );
+	mPlanner->setContactType( CONTACT_PRESET );
+	mPlanner->resetPlanner();
+	mPlanner->startPlanner();
+	
+	QObject::connect(mPlanner,SIGNAL(update()),this,SLOT(plannerUpdate()));
+	QObject::connect(mPlanner,SIGNAL(complete()),this,SLOT(plannerComplete()));
 
-	for( int i = 0; i < mBaseGrasps.size(); ++i ) {
-		ts = clock();
-		std::cout<<"Making sample grasps ["<<i<<"] close"<<std::endl;
-		closeSampleGrasps(i);
-		tf = clock();
-		dt = (double)(tf - ts)/CLOCKS_PER_SEC;
-		std::cout << "Time in closing "<<i<<": "<<dt<< std::endl;
-	}
-
-	std::cout << "Done with main loop "<< std::endl;
-	*/
 }
 
 

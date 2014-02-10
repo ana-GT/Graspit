@@ -56,6 +56,7 @@ class  CanonicalPlannerDlg : public QDialog,
   public slots:  
   void exitButton_clicked();
   void plannerStart_clicked();
+  void plannerPause_clicked();
   void readFile_clicked();
   void baseBox_valueChanged(int);
   void sampleBox_valueChanged(int);

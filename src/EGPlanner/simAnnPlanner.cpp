@@ -94,27 +94,27 @@ bool SimAnnPlanner::initialized() {
  * @brief Set current state and some other things that I don't get just yet
  */
 void SimAnnPlanner::setModelState(const GraspPlanningState *modelState) {
-	if (isActive()) {
-		DBGA("Can not change model state while planner is running");
-		return;
-	}
-
-	if (mCurrentState) delete mCurrentState;
-	mCurrentState = new GraspPlanningState(modelState);
-	mCurrentState->setEnergy(1.0e5);
-	//my hand might be a clone
-	mCurrentState->changeHand(mHand, true);
-
-	if (mTargetState && (mTargetState->readPosition()->getType() != mCurrentState->readPosition()->getType() ||
-						 mTargetState->readPosture()->getType() != mCurrentState->readPosture()->getType() ) ) {
-		delete mTargetState; mTargetState = NULL;
-    }
-	if (!mTargetState) {
-		mTargetState = new GraspPlanningState(mCurrentState);
-		mTargetState->reset();
-		mInputType = INPUT_NONE;
-	}
-	invalidateReset();
+  if (isActive()) {
+    DBGA("Can not change model state while planner is running");
+    return;
+  }
+  
+  if (mCurrentState) delete mCurrentState;
+  mCurrentState = new GraspPlanningState(modelState);
+  mCurrentState->setEnergy(1.0e5);
+  //my hand might be a clone
+  mCurrentState->changeHand(mHand, true);
+  
+  if (mTargetState && (mTargetState->readPosition()->getType() != mCurrentState->readPosition()->getType() ||
+		       mTargetState->readPosture()->getType() != mCurrentState->readPosture()->getType() ) ) {
+    delete mTargetState; mTargetState = NULL;
+  }
+  if (!mTargetState) {
+    mTargetState = new GraspPlanningState(mCurrentState);
+    mTargetState->reset();
+    mInputType = INPUT_NONE;
+  }
+  invalidateReset();
 }
 
 /**
@@ -156,37 +156,4 @@ void SimAnnPlanner::mainLoop() {
 	mCurrentStep = mSimAnn->getCurrentStep();
 	if (mCurrentStep % 100 == 0 && !mMultiThread) emit update();
 	if (mMaxSteps == 200) {DBGP("Child at " << mCurrentStep << " steps");}
-}
-
-/**
- * @function checkTerminationConditions
- * @brief Check if planner should finish (max Steps /time reached) or if it is already finished
- */
-bool SimAnnPlanner::checkTerminationConditions() {
-
-	if (!isActive()) return true;
-	bool termination = false;
-	//max steps equal to -1 means run forever
-	if (mMaxSteps != -1 && mCurrentStep >= mMaxSteps){ 
-		if (!mRepeat) {
-			pausePlanner();
-			termination = true;
-		} else {
-			resetParameters();
-		}
-		if (!mMultiThread) {
-			emit update();
-		}
-	} else if (mMaxTime != -1 ) {
-		//check time limit
-		//for now exceeding the time limit simply kills it for good
-		if (getRunningTime() > mMaxTime) {
-			termination = true;
-			pausePlanner();
-		}
-	}
-	if (termination) {
-		emit complete();
-	}
-	return termination;
 }

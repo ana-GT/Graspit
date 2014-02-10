@@ -700,8 +700,42 @@ void EigenGraspPlannerDlg::plannerPrint_clicked() {
   printf("Printing info \n");
 
   FILE *f = fopen("graspInfo_stored.txt","w");
+  fprintf( f, "%d \n", mPlanner->getListSize() );
   for (int i=0; i<mPlanner->getListSize(); i++) {
-    mPlanner->getGrasp(i)->writeToFile(f);
+    
+    // Store energy
+   fprintf( f, " %f \n", mPlanner->getGrasp(i)->getEnergy() );
+	// Store pose
+    for( int j = 0; j < mPlanner->getGrasp(i)->readPosition()->getNumVariables(); ++j ) {
+      fprintf( f, "%f ", mPlanner->getGrasp(i)->readPosition()->getVariable(j)->getValue() );
+    }
+    fprintf( f, "\n" );
+    // Store open fingers pose
+    double* dofs = new double[ mHand->getNumDOF() ];
+    mPlanner->getGrasp(i)->readPosture()->getHandDOF( dofs);
+    for( int j = 0; j < mHand->getNumDOF(); j++ ) { 
+      fprintf(f, "%f ", dofs[j] );
+    }
+    fprintf( f, "\n");
+
+    // Store close fingers pose
+    for( int j = 0; j < mHand->getNumDOF(); j++ ) { 
+      fprintf(f, "%f ", dofs[j] );
+    }
+    fprintf( f, "\n");
+
+    /*
+    // Set the grasp in the actual hand
+    mPlanner->getGrasp(i)->execute();
+    // Close
+    mHand->autoGrasp( false );
+    // Get the closing configuration
+    mHand->getDOFVals( dofs );
+    for( int j = 0; j < mHand->getNumDOF(); ++j ) {
+      fprintf(f, "%f ", dofs[j] );
+    }
+    fprintf( f, "\n");
+    */
   }
   fclose(f);
   printf("Done printing info \n");

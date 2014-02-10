@@ -29,8 +29,14 @@
 #include "searchEnergy.h"
 #include "simAnnPlus.h"
 
+#include "robot.h"
+#include <Inventor/sensors/SoIdleSensor.h>
+
 //#define GRASPITDBG
 #include "debug.h"
+
+// #define PROF_ENABLED
+#include "profiling.h"
 
 //! How many of the best states are buffered. Should be a parameter
 #define BEST_LIST_SIZE 20
@@ -46,7 +52,12 @@ SimAnnPlusPlanner::SimAnnPlusPlanner( Hand *h ) {
 	init();
 	mEnergyCalculator = new SearchEnergy();
 	mSimAnnPlus = new SimAnnPlus();
-	//mSimAnn->writeResults(true);
+
+	// Set time limits
+	this->setRepeat( false );
+	//this->setRenderType();
+	//this->setMaxTime( 10.0 );
+	this->setMaxSteps( 70000 );
 }
 
 /**
@@ -55,6 +66,28 @@ SimAnnPlusPlanner::SimAnnPlusPlanner( Hand *h ) {
  */
 SimAnnPlusPlanner::~SimAnnPlusPlanner(){
 	if (mSimAnnPlus) delete mSimAnnPlus;
+}
+
+/**
+ * @function pausePlanner
+ * @brief No emit complete after pausing. That is taken care of in termination fx
+ */
+void SimAnnPlusPlanner::pausePlanner() {
+
+  if( getState() != RUNNING ) { return; }
+
+  mProfileInstance->stopTimer();
+  
+  if( mIdleSensor ) delete mIdleSensor;
+  mIdleSensor = NULL;
+  mHand->showVirtualContacts( true );
+
+  setState( READY );
+  PROF_STOP_TIMER( EG_PLANNER );
+  PROF_PRINT_ALL;
+  
+  // We won't emit complete here
+
 }
 
 /**
@@ -105,15 +138,11 @@ void SimAnnPlusPlanner::setModelState(const GraspPlanningState *modelState) {
 	//my hand might be a clone
 	mCurrentState->changeHand(mHand, true);
 
-	if (mTargetState && (mTargetState->readPosition()->getType() != mCurrentState->readPosition()->getType() ||
-						 mTargetState->readPosture()->getType() != mCurrentState->readPosture()->getType() ) ) {
-		delete mTargetState; mTargetState = NULL;
-    }
-	if (!mTargetState) {
-		mTargetState = new GraspPlanningState(mCurrentState);
-		mTargetState->reset();
-		mInputType = INPUT_NONE;
-	}
+	// For SimAnnPlusPlanner we do not consider target
+	mTargetState = new GraspPlanningState(mCurrentState);
+	mTargetState->reset();
+	mInputType = INPUT_NONE;
+
 	invalidateReset();
 }
 
@@ -122,40 +151,42 @@ void SimAnnPlusPlanner::setModelState(const GraspPlanningState *modelState) {
  * @brief Iterate function for single-thread
  */
 void SimAnnPlusPlanner::mainLoop() {
-	GraspPlanningState *input = NULL;
-	if ( processInput() ) {
-		input = mTargetState;
-	}
 
-	//call sim ann
-	SimAnnPlus::Result result = mSimAnnPlus->iterate(mCurrentState, mEnergyCalculator, input);
-	if ( result == SimAnnPlus::FAIL) {
-		DBGP("Sim ann failed");
-		return;
-	}
-	DBGP("Sim Ann success");
+  // TODO TARGET AVOID PREVIOUS GOALS???
 
-	//put result in list if there's room or it's better than the worst solution so far
-	double worstEnergy;
-	if ((int)mBestList.size() < BEST_LIST_SIZE) worstEnergy = 1.0e5;
-	else worstEnergy = mBestList.back()->getEnergy();
-	if (result == SimAnnPlus::JUMP && mCurrentState->getEnergy() < worstEnergy) {
-		GraspPlanningState *insertState = new GraspPlanningState(mCurrentState);
-		//but check if a similar solution is already in there
-		if (!addToListOfUniqueSolutions(insertState,&mBestList,0.2)) {
-			delete insertState;
-		} else {
-			mBestList.sort(GraspPlanningState::compareStates);
-			while ((int)mBestList.size() > BEST_LIST_SIZE) {
-				delete(mBestList.back());
-				mBestList.pop_back();
-			}
-		}
-	}
-	render();
-	mCurrentStep = mSimAnnPlus->getCurrentStep();
-	if (mCurrentStep % 100 == 0 && !mMultiThread) emit update();
-	if (mMaxSteps == 200) {DBGP("Child at " << mCurrentStep << " steps");}
+  //call SimAnnPlus
+  SimAnnPlus::Result result = mSimAnnPlus->iterate(mCurrentState, 
+						   mEnergyCalculator, 
+						   NULL );
+
+  if ( result == SimAnnPlus::FAIL) {
+    DBGP("Sim ann failed");
+    return;
+  }
+	
+  DBGP("Sim Ann success");
+
+  //put result in list if there's room or it's better than the worst solution so far
+  double worstEnergy;
+  if ((int)mBestList.size() < BEST_LIST_SIZE) worstEnergy = 1.0e5;
+  else worstEnergy = mBestList.back()->getEnergy();
+  if (result == SimAnnPlus::JUMP && mCurrentState->getEnergy() < worstEnergy) {
+    GraspPlanningState *insertState = new GraspPlanningState(mCurrentState);
+    //but check if a similar solution is already in there
+    if (!addToListOfUniqueSolutions(insertState,&mBestList,0.2)) {
+      delete insertState;
+    } else {
+      mBestList.sort(GraspPlanningState::compareStates);
+      while ((int)mBestList.size() > BEST_LIST_SIZE) {
+	delete(mBestList.back());
+	mBestList.pop_back();
+      }
+    }
+  }
+  render();
+  mCurrentStep = mSimAnnPlus->getCurrentStep();
+  if (mCurrentStep % 100 == 0 && !mMultiThread) emit update();
+  if (mMaxSteps == 200) {DBGP("Child at " << mCurrentStep << " steps");}
 }
 
 
@@ -166,29 +197,29 @@ void SimAnnPlusPlanner::mainLoop() {
  */
 bool SimAnnPlusPlanner::checkTerminationConditions() {
 
-	if (!isActive()) return true;
-	bool termination = false;
-	//max steps equal to -1 means run forever
-	if (mMaxSteps != -1 && mCurrentStep >= mMaxSteps){ 
-		if (!mRepeat) {
-			pausePlanner();
-			termination = true;
-		} else {
-			resetParameters();
-		}
-		if (!mMultiThread) {
-			emit update();
-		}
-	} else if (mMaxTime != -1 ) {
-		//check time limit
-		//for now exceeding the time limit simply kills it for good
-		if (getRunningTime() > mMaxTime) {
-			termination = true;
-			pausePlanner();
-		}
-	}
-	if (termination) {
-		emit complete();
-	}
-	return termination;
+  if (!isActive()) return true;
+  
+  bool termination = false;
+
+  // Max steps reached
+  if (mMaxSteps != -1 && mCurrentStep >= mMaxSteps){ 
+    pausePlanner();
+    termination = true;    
+    emit update();
+
+  } else if (mMaxTime != -1 ) {
+
+    // Max time reached
+    if (getRunningTime() > mMaxTime) {
+      stopPlanner();
+      termination = true;
+      emit update();
+    }
+  }
+
+  if (termination) {
+    emit complete();
+  }
+
+  return termination;
 }

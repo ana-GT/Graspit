@@ -62,8 +62,6 @@ public:
 	virtual PlannerType getType(){return PLANNER_SIM_ANN;}
 	void setAnnealingParameters(AnnealingType y);
 
-	virtual bool checkTerminationConditions();
-
 	//! Checks if a model state has been set
 	virtual bool initialized();
 	//! Has to be called BEFORE any planning can begin. 

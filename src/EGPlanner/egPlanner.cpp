@@ -78,7 +78,7 @@ void EGPlanner::init() {
 	mRenderCount = 0;
 	mLastRenderState = NULL;
 	mMaxSteps = 100000;
-	mMaxTime = 10; //-1;
+	mMaxTime = -1;
 	mMultiThread = false;
 	mState = INIT;
 	mUsesClone = false;
@@ -417,13 +417,15 @@ void EGPlanner::stopPlanner() {
  * @brief For single-threaded, it will stop the mIdleSensor, hence stopping the running of iterations
  */
 void EGPlanner::pausePlanner() {
-	if (getState() != RUNNING) return;
+  if (getState() != RUNNING) { return; }
+
 	mProfileInstance->stopTimer();
 	if (!mMultiThread) {
 		if (mIdleSensor) delete mIdleSensor;
 		mIdleSensor = NULL;
 		mHand->showVirtualContacts(true);
 	} 
+
 	setState(READY);
 	PROF_STOP_TIMER(EG_PLANNER);
 	PROF_PRINT_ALL;

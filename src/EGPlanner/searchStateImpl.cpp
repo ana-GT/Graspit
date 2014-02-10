@@ -146,8 +146,8 @@ void PositionStateComplete::setTran(const transf &t)
 
 void PositionStateAA::createVariables()
 {
-	mVariables.push_back( new SearchVariable("Tx",-250,250,50) );
-	mVariables.push_back( new SearchVariable("Ty",-250,250,50) );
+	mVariables.push_back( new SearchVariable("Tx",-250,250,150) );
+	mVariables.push_back( new SearchVariable("Ty",-250,250,150) );
 	//variable limit hacked for search with Pr2Gripper2010 for tall objects
 	mVariables.push_back( new SearchVariable("Tz",-250,350,50) );
 	mVariables.push_back( new SearchVariable("theta", 0, M_PI, M_PI/5) ); // M_PI/5

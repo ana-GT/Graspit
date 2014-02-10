@@ -59,7 +59,15 @@ void CanonicalPlannerDlg::exitButton_clicked() {
  */
 void CanonicalPlannerDlg::plannerStart_clicked() {
 
+	mPlanner = new CanonPlanner( mHand );
 	mPlanner->mainLoop();
+}
+
+/**
+  * @function plannerPause_clicked
+  */
+  void CanonicalPlannerDlg::plannerPause_clicked() {
+		mPlanner->pausePlanner();
 }
 
 /**
@@ -108,11 +116,17 @@ void CanonicalPlannerDlg::sampleBox_valueChanged(int _j ) {
 	sampleBox->setRange(0, mPlanner->getNumSampleGrasps(baseBox->value()) - 1 );
 	mPlanner->showSampleGrasp( baseBox->value(), _j );
 
+	GraspPlanningState * gps = mPlanner->getSampleGrasp( baseBox->value(), _j );
+	double energy = gps->getEnergy();
+	int iter = gps->getItNumber();
+
+	std::cout << " Grasp ["<<baseBox->value()<<","<<_j<<"]: Energy: "<< energy<<" and iter: "<< iter <<std::endl;
 }
 
 
 /**
  * @function setMembers
+ * @brief Initialize the mHandObjectState, set planner to null and set hand to use posture and quaternion convention
  */
 void CanonicalPlannerDlg::setMembers( Hand *_h, GraspableBody *_b ) {
 
@@ -124,9 +138,12 @@ void CanonicalPlannerDlg::setMembers( Hand *_h, GraspableBody *_b ) {
 
   mHandObjectState = new GraspPlanningState( mHand );
   mHandObjectState->setObject( mObject );
-  mHandObjectState->setPositionType( SPACE_AXIS_ANGLE );
-  mHandObjectState->setRefTran(mObject->getTran());
+  mHandObjectState->setPositionType( SPACE_COMPLETE );
+  mHandObjectState->setPostureType( POSE_EIGEN );
   mHandObjectState->reset();
+
+  mHandObjectState->setRefTran(mObject->getTran());
+  mHandObjectState->getPosition()->setTran( mHand->getTran() );
 
 }
 

@@ -3,15 +3,14 @@
 	<graspableBody>
 		<filename>models/objects/PSA/door_hinge_inf.xml</filename>
 		<transform>
-			<fullTransform>(+0.707107 +0 -0.707107 +0)[+0 +0 +0]</fullTransform>
+			<fullTransform>(+1 +00 +0)[+0 +0 +0]</fullTransform>
 		</transform>
 	</graspableBody>
-
 	<robot>
 		<filename>models/robots/Schunk/Schunk.xml</filename>
-		<dofValues>+0 +0 +0 +0 +0 +0 +0 +0 </dofValues>
+		<dofValues>+1.1044 -0.516294 +0.775525 -0.516294 +0.775525 +0 -0.516294 +0.775525 </dofValues>
 		<transform>
-			<fullTransform>(+0 +1 +0 +0)[+3.17625 +0 +313.67]</fullTransform>
+			<fullTransform>(-0.0877777 +0.589585 +0.195978 -0.778638)[+171.122 +31.6667 -25.1319]</fullTransform>
 		</transform>
 	</robot>
 	<camera>
