@@ -718,13 +718,7 @@ void EigenGraspPlannerDlg::plannerPrint_clicked() {
     }
     fprintf( f, "\n");
 
-    // Store close fingers pose
-    for( int j = 0; j < mHand->getNumDOF(); j++ ) { 
-      fprintf(f, "%f ", dofs[j] );
-    }
-    fprintf( f, "\n");
 
-    /*
     // Set the grasp in the actual hand
     mPlanner->getGrasp(i)->execute();
     // Close
@@ -735,7 +729,6 @@ void EigenGraspPlannerDlg::plannerPrint_clicked() {
       fprintf(f, "%f ", dofs[j] );
     }
     fprintf( f, "\n");
-    */
   }
   fclose(f);
   printf("Done printing info \n");
