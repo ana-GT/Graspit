@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<root>
+	<material>metal</material>
+	<mass>5000</mass>
+	<cog>0 0 0</cog>
+	<geometryFile type="Inventor">steelTable1.wrl</geometryFile>
+</root>
